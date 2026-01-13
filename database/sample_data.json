@@ -1,0 +1,60 @@
+{
+  "users": [
+    {
+      "id": "user1",
+      "name": "Omkar Potdar",
+      "email": "omkar@example.com",
+      "password": "$2b$12$examplehashedpassword"
+    },
+    {
+      "id": "user2",
+      "name": "Test User",
+      "email": "test@example.com",
+      "password": "$2b$12$examplehashedpassword"
+    }
+  ],
+  "medicines": [
+    {
+      "id": "med1",
+      "brand_name": "Crocin",
+      "generic_name": "Paracetamol",
+      "uses": ["Fever", "Pain"],
+      "dosage": "500mg"
+    },
+    {
+      "id": "med2",
+      "brand_name": "Vicks",
+      "generic_name": "Menthol",
+      "uses": ["Cold", "Cough"],
+      "dosage": "Apply as needed"
+    }
+  ],
+  "prescriptions": [
+    {
+      "id": "presc1",
+      "user_id": "user1",
+      "image_url": "/uploads/prescription1.jpg",
+      "uploaded_at": "2026-01-12T12:00:00"
+    },
+    {
+      "id": "presc2",
+      "user_id": "user2",
+      "image_url": "/uploads/prescription2.jpg",
+      "uploaded_at": "2026-01-10T15:30:00"
+    }
+  ],
+  "history": [
+    {
+      "id": "hist1",
+      "user_id": "user1",
+      "date": "2026-01-11",
+      "description": "Searched for symptoms: Fever, Headache"
+    },
+    {
+      "id": "hist2",
+      "user_id": "user2",
+      "date": "2026-01-09",
+      "description": "Uploaded prescription for cold and cough"
+    }
+  ]
+}

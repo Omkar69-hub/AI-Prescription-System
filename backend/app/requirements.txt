@@ -1,0 +1,24 @@
+# FastAPI framework
+fastapi==0.111.1
+uvicorn[standard]==0.23.2
+
+# MongoDB Async Driver
+motor==4.3.1
+
+# Authentication / JWT
+python-jose==3.3.0
+passlib[bcrypt]==1.7.5
+
+# Image processing & OCR
+pillow==10.3.0
+pytesseract==0.5.3
+
+# NLP (optional: for more advanced processing)
+spacy==3.6.0
+nltk==3.8.1
+
+# HTTP requests (optional, if you call external APIs)
+requests==2.31.0
+
+# Environment variable management
+python-dotenv==1.0.1
