@@ -12,4 +12,12 @@ db = None      # Database reference
 async def connect_db():
     global client, db
     client = AsyncIOMotorClient(settings.MONGO_URI)
-    db = client[settings.DATABASE_NAME_]()
+    db = client[settings.DATABASE_NAME]
+
+# ----------------------------
+# Disconnect MongoDB
+# ----------------------------
+async def close_db():
+    global client
+    if client:
+        client.close()

@@ -1,5 +1,3 @@
-# backend/app/routes/ocr.py
-
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from app.ai.ocr_engine import extract_text_from_image

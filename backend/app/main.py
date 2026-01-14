@@ -4,10 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-# Import routes
 from app.routes import auth, ocr, nlp, recommend, history
-
-# Import database connection (MongoDB)
 from app.core.database import connect_db, close_db
 
 app = FastAPI(
@@ -20,9 +17,8 @@ app = FastAPI(
 # CORS Middleware
 # ----------------------------
 origins = [
-    "http://localhost:5173",  # Frontend (Vite/React default)
-    "http://localhost:3000",  # React dev server
-    "*",                      # Optional: allow all origins (dev only)
+    "http://localhost:5173",
+    "http://localhost:3000",
 ]
 
 app.add_middleware(
@@ -39,15 +35,15 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_db():
     await connect_db()
-    print("Database connected!")
+    print("✅ Database connected")
 
 @app.on_event("shutdown")
 async def shutdown_db():
     await close_db()
-    print("Database disconnected!")
+    print("❌ Database disconnected")
 
 # ----------------------------
-# Include Routers
+# Routers
 # ----------------------------
 app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
 app.include_router(ocr.router, prefix="/api/ocr", tags=["OCR"])
@@ -55,13 +51,6 @@ app.include_router(nlp.router, prefix="/api/nlp", tags=["NLP"])
 app.include_router(recommend.router, prefix="/api/symptoms", tags=["Recommendations"])
 app.include_router(history.router, prefix="/api/history", tags=["History"])
 
-# ----------------------------
-# Root Endpoint
-# ----------------------------
 @app.get("/")
 async def root():
     return JSONResponse({"message": "Welcome to AI Prescription System API!"})
-
-# ----------------------------
-# Run with: uvicorn main:app --reload
-# ----------------------------

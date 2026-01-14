@@ -1,4 +1,8 @@
-# backend/app/ai/ocr_engine.py
+import pytesseract
+
+# Set path to your Tesseract executable
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
 
 import pytesseract
 from PIL import Image
@@ -22,10 +26,3 @@ def extract_text_from_image(image_bytes: bytes) -> str:
         return text.strip()
     except Exception as e:
         raise RuntimeError(f"OCR extraction failed: {str(e)}")
-
-#Requires pytesseract and Pillow. Install with:
-
-#pip install pytesseract pillow
-
-
-#reprocess_image improves OCR accuracy.

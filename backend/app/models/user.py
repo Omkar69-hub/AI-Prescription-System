@@ -2,12 +2,12 @@
 
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
+from bson import ObjectId
 from app.core.database import db
 from app.core.security import get_password_hash, verify_password
-from bson import ObjectId
 
 # ----------------------------
-# Helper class to handle ObjectId
+# Helper class for ObjectId
 # ----------------------------
 class PyObjectId(ObjectId):
     @classmethod
@@ -23,7 +23,6 @@ class PyObjectId(ObjectId):
     @classmethod
     def __modify_schema__(cls, field_schema):
         field_schema.update(type="string")
-
 
 # ----------------------------
 # Pydantic models for User
