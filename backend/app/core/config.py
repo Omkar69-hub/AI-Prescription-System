@@ -1,25 +1,31 @@
-import os
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
     # ----------------------------
     # Database
     # ----------------------------
-    MONGO_URI: str = os.getenv("MONGO_URI", "mongodb://localhost:27017")
-    DATABASE_NAME: str = os.getenv("DATABASE_NAME", "ai_prescription_db")
+    MONGO_URI: str
+    DATABASE_NAME: str
 
     # ----------------------------
     # JWT / Security
     # ----------------------------
-    SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key")
-    ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60 * 24))  # 1 day
+    SECRET_KEY: str
+    ALGORITHM: str
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
 
     # ----------------------------
-    # Other settings
+    # App
     # ----------------------------
-    DEBUG: bool = bool(os.getenv("DEBUG", True))
+    DEBUG: bool = True
 
-# Create a settings instance
+    # Load from .env file
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8"
+    )
+
+
+# Create settings instance
 settings = Settings()

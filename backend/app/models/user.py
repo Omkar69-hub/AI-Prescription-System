@@ -7,7 +7,7 @@ from app.core.database import db
 from app.core.security import get_password_hash, verify_password
 
 # ----------------------------
-# Helper class for ObjectId
+# Helper class to handle ObjectId
 # ----------------------------
 class PyObjectId(ObjectId):
     @classmethod
@@ -17,12 +17,12 @@ class PyObjectId(ObjectId):
     @classmethod
     def validate(cls, v):
         if not ObjectId.is_valid(v):
-            raise ValueError("Invalid objectid")
+            raise ValueError("Invalid ObjectId")
         return ObjectId(v)
 
     @classmethod
-    def __modify_schema__(cls, field_schema):
-        field_schema.update(type="string")
+    def __get_pydantic_json_schema__(cls, core_schema, handler):
+        return {"type": "string"}
 
 # ----------------------------
 # Pydantic models for User
