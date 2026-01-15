@@ -1,8 +1,7 @@
-# backend/app/main.py
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.requests import Request
 
 from app.routes import auth, ocr, nlp, recommend, history, medicines
 from app.core.database import connect_db, close_db
@@ -52,6 +51,31 @@ app.include_router(recommend.router, prefix="/api/symptoms", tags=["Recommendati
 app.include_router(history.router, prefix="/api/history", tags=["History"])
 app.include_router(medicines.router, prefix="/api/medicines", tags=["Medicines"])
 
+# ----------------------------
+# Root endpoint
+# ----------------------------
 @app.get("/")
 async def root():
     return JSONResponse({"message": "Welcome to AI Prescription System API!"})
+
+# ----------------------------
+# Global Exception Handler
+# ----------------------------
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={"message": f"Internal Server Error: {str(exc)}"}
+    )
+
+# ----------------------------
+# Optional: Run standalone
+# ----------------------------
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(
+        "app.main:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True
+    )
