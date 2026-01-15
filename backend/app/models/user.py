@@ -3,8 +3,11 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from bson import ObjectId
-from app.core.database import db
+from fastapi import Depends
+from motor.motor_asyncio import AsyncIOMotorDatabase
+
 from app.core.security import get_password_hash, verify_password
+from app.core.database import get_database
 
 # ----------------------------
 # Helper class to handle ObjectId
@@ -37,27 +40,31 @@ class UserCreate(UserBase):
 class UserOut(UserBase):
     id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
 
+    class Config:
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+        populate_by_name = True
+
 class UserInDB(UserBase):
     hashed_password: str
 
 # ----------------------------
 # Database helper functions
 # ----------------------------
-async def create_user(user: UserCreate):
+async def create_user(user: UserCreate, db: AsyncIOMotorDatabase = Depends(get_database)) -> UserOut:
     user_dict = user.dict()
     user_dict["hashed_password"] = get_password_hash(user_dict.pop("password"))
     result = await db["users"].insert_one(user_dict)
-    user_out = UserOut(**user_dict, _id=result.inserted_id)
-    return user_out
+    return UserOut(**user_dict, _id=result.inserted_id)
 
-async def get_user_by_email(email: str) -> Optional[UserInDB]:
+async def get_user_by_email(email: str, db: AsyncIOMotorDatabase = Depends(get_database)) -> Optional[UserInDB]:
     user_data = await db["users"].find_one({"email": email})
     if user_data:
         return UserInDB(**user_data)
     return None
 
-async def verify_user(email: str, password: str) -> bool:
-    user = await get_user_by_email(email)
+async def verify_user(email: str, password: str, db: AsyncIOMotorDatabase = Depends(get_database)) -> bool:
+    user = await get_user_by_email(email, db)
     if not user:
         return False
     return verify_password(password, user.hashed_password)

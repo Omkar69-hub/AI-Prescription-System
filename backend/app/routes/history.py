@@ -1,40 +1,36 @@
 # backend/app/routes/history.py
 
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import JSONResponse
-from app.models.history import db, HistoryCreate, HistoryOut
-from bson import ObjectId
+from app.models.history import HistoryCreate, HistoryOut, create_history, get_history_by_user
+from app.core.database import get_database
+from motor.motor_asyncio import AsyncIOMotorDatabase
+from typing import List
 
 router = APIRouter()
 
 # ----------------------------
 # Get user history
 # ----------------------------
-@router.get("/")
-async def get_history(user_id: str = None):
+@router.get("/", response_model=List[HistoryOut])
+async def get_history(user_id: str, db: AsyncIOMotorDatabase = Depends(get_database)):
     """
-    Get all history records for the logged-in user
+    Get all history records for a specific user
     """
     try:
-        query = {"user_id": ObjectId(user_id)} if user_id else {}
-        cursor = db["history"].find(query).sort("created_at", -1)
-        history_list = []
-        async for record in cursor:
-            history_list.append(HistoryOut(**record, id=record["_id"]))
-        return history_list
+        return await get_history_by_user(user_id, db)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to fetch history: {str(e)}")
+
 
 # ----------------------------
 # Add history record
 # ----------------------------
-@router.post("/add")
-async def add_history(record: HistoryCreate):
+@router.post("/add", response_model=HistoryOut)
+async def add_history(record: HistoryCreate, db: AsyncIOMotorDatabase = Depends(get_database)):
     """
     Save a new history record
     """
     try:
-        result = await db["history"].insert_one(record.dict())
-        return {"message": "History saved", "id": str(result.inserted_id)}
+        return await create_history(record, db)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to save history: {str(e)}")

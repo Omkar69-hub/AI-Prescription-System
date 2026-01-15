@@ -1,46 +1,64 @@
-# backend/app/models/prescription.py
+# backend/app/routes/prescriptions.py
 
-from pydantic import BaseModel, Field
-from typing import List, Optional
-from datetime import datetime
+from fastapi import APIRouter, Depends, HTTPException
+from typing import List
 from bson import ObjectId
-from app.core.database import db
-from app.models.user import PyObjectId
+
+from app.models.prescription import (
+    PrescriptionCreate,
+    PrescriptionOut,
+    create_prescription,
+    get_prescriptions_by_user,
+    get_prescription_by_id
+)
+from app.core.database import get_database
+from motor.motor_asyncio import AsyncIOMotorDatabase
+
+router = APIRouter(prefix="/api/prescriptions", tags=["Prescriptions"])
+
 
 # ----------------------------
-# Pydantic Models
+# Get all prescriptions for a user
 # ----------------------------
-class PrescriptionBase(BaseModel):
-    user_id: PyObjectId
-    medicines: Optional[List[str]] = []  # Extracted medicine names
-    image_url: Optional[str] = None      # URL to uploaded prescription image
-    notes: Optional[str] = None
+@router.get("/", response_model=List[PrescriptionOut])
+async def fetch_prescriptions(user_id: str, db: AsyncIOMotorDatabase = Depends(get_database)):
+    """
+    Fetch all prescriptions for a user
+    """
+    try:
+        prescriptions = await get_prescriptions_by_user(user_id, db)
+        return prescriptions
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch prescriptions: {str(e)}")
 
-class PrescriptionCreate(PrescriptionBase):
-    pass
-
-class PrescriptionOut(PrescriptionBase):
-    id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-    created_at: datetime = Field(default_factory=datetime.utcnow)
 
 # ----------------------------
-# Database helper functions
+# Get a prescription by ID
 # ----------------------------
-async def create_prescription(prescription: PrescriptionCreate) -> PrescriptionOut:
-    data = prescription.dict()
-    data["created_at"] = datetime.utcnow()
-    result = await db["prescriptions"].insert_one(data)
-    return PrescriptionOut(**data, _id=result.inserted_id)
+@router.get("/{prescription_id}", response_model=PrescriptionOut)
+async def fetch_prescription(prescription_id: str, db: AsyncIOMotorDatabase = Depends(get_database)):
+    """
+    Fetch a single prescription by its ID
+    """
+    try:
+        prescription = await get_prescription_by_id(prescription_id, db)
+        if not prescription:
+            raise HTTPException(status_code=404, detail="Prescription not found")
+        return prescription
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch prescription: {str(e)}")
 
-async def get_prescriptions_by_user(user_id: str) -> List[PrescriptionOut]:
-    prescriptions = []
-    cursor = db["prescriptions"].find({"user_id": ObjectId(user_id)}).sort("created_at", -1)
-    async for pres in cursor:
-        prescriptions.append(PrescriptionOut(**pres))
-    return prescriptions
 
-async def get_prescription_by_id(prescription_id: str) -> Optional[PrescriptionOut]:
-    pres = await db["prescriptions"].find_one({"_id": ObjectId(prescription_id)})
-    if pres:
-        return PrescriptionOut(**pres)
-    return None
+# ----------------------------
+# Add a new prescription
+# ----------------------------
+@router.post("/add", response_model=PrescriptionOut)
+async def add_prescription(record: PrescriptionCreate, db: AsyncIOMotorDatabase = Depends(get_database)):
+    """
+    Save a new prescription
+    """
+    try:
+        new_prescription = await create_prescription(record, db)
+        return new_prescription
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to save prescription: {str(e)}")
