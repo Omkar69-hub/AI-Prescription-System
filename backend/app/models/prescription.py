@@ -1,64 +1,41 @@
-# backend/app/routes/prescriptions.py
+# backend/app/models/prescription.py
 
-from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel, Field
 from typing import List
-from bson import ObjectId
-
-from app.models.prescription import (
-    PrescriptionCreate,
-    PrescriptionOut,
-    create_prescription,
-    get_prescriptions_by_user,
-    get_prescription_by_id
-)
-from app.core.database import get_database
+from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
-router = APIRouter(prefix="/api/prescriptions", tags=["Prescriptions"])
-
-
 # ----------------------------
-# Get all prescriptions for a user
+# Pydantic Schemas
 # ----------------------------
-@router.get("/", response_model=List[PrescriptionOut])
-async def fetch_prescriptions(user_id: str, db: AsyncIOMotorDatabase = Depends(get_database)):
-    """
-    Fetch all prescriptions for a user
-    """
-    try:
-        prescriptions = await get_prescriptions_by_user(user_id, db)
-        return prescriptions
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch prescriptions: {str(e)}")
 
+class PrescriptionCreate(BaseModel):
+    user_id: str
+    disease: str
+    medicines: List[str]
 
-# ----------------------------
-# Get a prescription by ID
-# ----------------------------
-@router.get("/{prescription_id}", response_model=PrescriptionOut)
-async def fetch_prescription(prescription_id: str, db: AsyncIOMotorDatabase = Depends(get_database)):
-    """
-    Fetch a single prescription by its ID
-    """
-    try:
-        prescription = await get_prescription_by_id(prescription_id, db)
-        if not prescription:
-            raise HTTPException(status_code=404, detail="Prescription not found")
-        return prescription
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to fetch prescription: {str(e)}")
+class PrescriptionOut(BaseModel):
+    id: str = Field(alias="_id")
+    user_id: str
+    disease: str
+    medicines: List[str]
+    created_at: datetime
 
+    class Config:
+        allow_population_by_field_name = True
+        json_encoders = {str: str}
 
 # ----------------------------
-# Add a new prescription
+# Database functions
 # ----------------------------
-@router.post("/add", response_model=PrescriptionOut)
-async def add_prescription(record: PrescriptionCreate, db: AsyncIOMotorDatabase = Depends(get_database)):
-    """
-    Save a new prescription
-    """
-    try:
-        new_prescription = await create_prescription(record, db)
-        return new_prescription
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to save prescription: {str(e)}")
+
+async def create_prescription(prescription: PrescriptionCreate, db: AsyncIOMotorDatabase):
+    data = prescription.dict()
+    data["created_at"] = datetime.utcnow()
+    result = await db.prescriptions.insert_one(data)
+    data["_id"] = str(result.inserted_id)
+    return PrescriptionOut(**data)
+
+async def get_prescriptions_by_user(user_id: str, db: AsyncIOMotorDatabase):
+    cursor = db.prescriptions.find({"user_id": user_id}).sort("created_at", -1)
+    return [PrescriptionOut(**{**doc, "_id": str(doc["_id"])}) async for doc in cursor]

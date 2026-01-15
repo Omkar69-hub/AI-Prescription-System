@@ -1,26 +1,34 @@
 # backend/app/routes/prescriptions.py
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from typing import List
-from bson import ObjectId
-from app.models.prescription import PrescriptionCreate, PrescriptionOut, get_prescriptions_by_user, create_prescription
-from app.core.database import get_database
 from motor.motor_asyncio import AsyncIOMotorDatabase
+from datetime import datetime
 
-router = APIRouter(prefix="/api/prescriptions", tags=["Prescriptions"])
+from app.models.prescription import PrescriptionCreate, PrescriptionOut, create_prescription, get_prescriptions_by_user
+from app.core.database import get_database
+
+router = APIRouter(
+    prefix="/api/prescriptions",
+    tags=["Prescriptions"]
+)
 
 # ----------------------------
 # Get prescriptions by user
 # ----------------------------
-@router.get("/", response_model=List[PrescriptionOut])
-async def read_prescriptions(user_id: str, db: AsyncIOMotorDatabase = Depends(get_database)):
-    prescriptions = await get_prescriptions_by_user(user_id)
-    return prescriptions
+@router.get("/{user_id}", response_model=List[PrescriptionOut])
+async def fetch_prescriptions(user_id: str, db: AsyncIOMotorDatabase = Depends(get_database)):
+    """
+    Fetch all prescriptions for a given user_id
+    """
+    return await get_prescriptions_by_user(user_id, db)
 
 # ----------------------------
-# Add new prescription
+# Create prescription
 # ----------------------------
 @router.post("/add", response_model=PrescriptionOut)
 async def add_prescription(prescription: PrescriptionCreate, db: AsyncIOMotorDatabase = Depends(get_database)):
-    new_pres = await create_prescription(prescription)
-    return new_pres
+    """
+    Add a new prescription
+    """
+    return await create_prescription(prescription, db)
