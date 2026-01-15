@@ -1,18 +1,21 @@
 # backend/app/core/database.py
 
-from motor.motor_asyncio import AsyncIOMotorClient
+from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from app.core.config import settings
+from fastapi import Depends
 
-client: AsyncIOMotorClient | None = None  # MongoDB client
-db = None                                # Database reference
+# ----------------------------
+# Global MongoDB client & database
+# ----------------------------
+client: AsyncIOMotorClient | None = None
+db: AsyncIOMotorDatabase | None = None
 
 # ----------------------------
 # Connect to MongoDB
 # ----------------------------
 async def connect_db():
     """
-    Initialize MongoDB connection.
-    Use settings.MONGO_URI and settings.DATABASE_NAME
+    Initialize MongoDB connection using settings from config.py
     """
     global client, db
     try:
@@ -34,3 +37,14 @@ async def close_db():
     if client:
         client.close()
         print("MongoDB connection closed ✅")
+
+# ----------------------------
+# Dependency for FastAPI routes
+# ----------------------------
+def get_database() -> AsyncIOMotorDatabase:
+    """
+    Returns the MongoDB database instance for routes
+    """
+    if db is None:
+        raise RuntimeError("Database not connected. Call connect_db() first.")
+    return db
