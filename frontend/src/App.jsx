@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { getToken, getRole } from "./utils/auth";
 
 // Pages  
 import Home from "./pages/Home";
@@ -14,10 +15,20 @@ import UploadPrescription from "./components/UploadPrescription";
 import Recommendation from "./components/Recommendation";
 import History from "./components/History";
 
-// PrivateRoute: Protect routes for authenticated users
-const PrivateRoute = ({ children }) => {
-  const token = localStorage.getItem("token"); // JWT stored in localStorage
+/* ===========================
+   AUTH PROTECTION COMPONENTS
+=========================== */
+
+// 🔐 Check if user is logged in
+const RequireAuth = ({ children }) => {
+  const token = getToken();
   return token ? children : <Navigate to="/login" replace />;
+};
+
+// 🛡 Check if user has required role
+const RequireRole = ({ children, allowedRole }) => {
+  const role = getRole();
+  return role === allowedRole ? children : <Navigate to="/" replace />;
 };
 
 function App() {
@@ -29,59 +40,61 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* Protected User Routes */}
+        {/* ================= USER ROUTES ================= */}
         <Route
           path="/user/dashboard"
           element={
-            <PrivateRoute>
+            <RequireAuth>
               <UserDashboard />
-            </PrivateRoute>
+            </RequireAuth>
           }
         />
         <Route
           path="/user/symptom-search"
           element={
-            <PrivateRoute>
+            <RequireAuth>
               <SymptomSearch />
-            </PrivateRoute>
+            </RequireAuth>
           }
         />
         <Route
           path="/user/upload-prescription"
           element={
-            <PrivateRoute>
+            <RequireAuth>
               <UploadPrescription />
-            </PrivateRoute>
+            </RequireAuth>
           }
         />
         <Route
           path="/user/recommendation"
           element={
-            <PrivateRoute>
+            <RequireAuth>
               <Recommendation />
-            </PrivateRoute>
+            </RequireAuth>
           }
         />
         <Route
           path="/user/history"
           element={
-            <PrivateRoute>
+            <RequireAuth>
               <History />
-            </PrivateRoute>
+            </RequireAuth>
           }
         />
 
-        {/* Protected Admin Routes */}
+        {/* ================= ADMIN ROUTE ================= */}
         <Route
           path="/admin/dashboard"
           element={
-            <PrivateRoute>
-              <AdminDashboard />
-            </PrivateRoute>
+            <RequireAuth>
+              <RequireRole allowedRole="admin">
+                <AdminDashboard />
+              </RequireRole>
+            </RequireAuth>
           }
         />
 
-        {/* Catch-all: Redirect unknown paths to home */}
+        {/* Catch-all */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

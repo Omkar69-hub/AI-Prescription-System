@@ -1,22 +1,17 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import Navbar from "../components/Navbar";
 
 export default function UserDashboard() {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const token = localStorage.getItem("token");
-
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const response = await api.get("/history", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
+        // ✅ No need to manually send token (axios interceptor handles it)
+        const response = await api.get("/history");
         setHistory(response.data);
       } catch (err) {
         setError("Failed to load history");
@@ -26,112 +21,119 @@ export default function UserDashboard() {
     };
 
     fetchHistory();
-  }, [token]);
-
-  if (loading) {
-    return (
-      <div className="text-center mt-10 text-blue-600">
-        Loading history...
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-center mt-10 text-red-600">
-        {error}
-      </div>
-    );
-  }
+  }, []);
 
   return (
-    <div className="max-w-5xl mx-auto p-4">
+    <>
+      <Navbar />
 
-      {/* Header */}
-      <h2 className="text-3xl font-bold text-indigo-700 mb-6">
-        Medical History
-      </h2>
+      <div className="max-w-5xl mx-auto p-4">
 
-      {history.length === 0 ? (
-        <p className="text-gray-600">
-          No previous searches or prescriptions found.
-        </p>
-      ) : (
-        <div className="space-y-6">
+        {/* Header */}
+        <h2 className="text-3xl font-bold text-indigo-700 mb-6">
+          Medical History
+        </h2>
 
-          {history.map((item, index) => (
-            <div
-              key={index}
-              className="bg-white shadow rounded p-6 border-l-4 border-indigo-600"
-            >
-              {/* Date */}
-              <p className="text-sm text-gray-500 mb-2">
-                {new Date(item.created_at).toLocaleString()}
+        {/* Loading */}
+        {loading && (
+          <div className="text-center mt-10 text-blue-600">
+            Loading history...
+          </div>
+        )}
+
+        {/* Error */}
+        {error && (
+          <div className="text-center mt-10 text-red-600">
+            {error}
+          </div>
+        )}
+
+        {/* Content */}
+        {!loading && !error && (
+          <>
+            {history.length === 0 ? (
+              <p className="text-gray-600">
+                No previous searches or prescriptions found.
               </p>
+            ) : (
+              <div className="space-y-6">
+                {history.map((item, index) => (
+                  <div
+                    key={index}
+                    className="bg-white shadow rounded p-6 border-l-4 border-indigo-600"
+                  >
+                    {/* Date */}
+                    <p className="text-sm text-gray-500 mb-2">
+                      {new Date(item.created_at).toLocaleString()}
+                    </p>
 
-              {/* Type */}
-              <p className="mb-2">
-                <strong>Type:</strong>{" "}
-                <span className="capitalize text-blue-600">
-                  {item.type}
-                </span>
-              </p>
+                    {/* Type */}
+                    <p className="mb-2">
+                      <strong>Type:</strong>{" "}
+                      <span className="capitalize text-blue-600">
+                        {item.type}
+                      </span>
+                    </p>
 
-              {/* Symptoms */}
-              {item.symptoms && (
-                <p className="mb-2">
-                  <strong>Symptoms:</strong> {item.symptoms}
-                </p>
-              )}
+                    {/* Symptoms */}
+                    {item.symptoms && (
+                      <p className="mb-2">
+                        <strong>Symptoms:</strong> {item.symptoms}
+                      </p>
+                    )}
 
-              {/* OCR Extracted Text */}
-              {item.extracted_text && (
-                <div className="mb-2">
-                  <strong>Extracted Text:</strong>
-                  <p className="bg-gray-100 p-2 rounded mt-1 whitespace-pre-wrap">
-                    {item.extracted_text}
-                  </p>
-                </div>
-              )}
+                    {/* OCR Extracted Text */}
+                    {item.extracted_text && (
+                      <div className="mb-2">
+                        <strong>Extracted Text:</strong>
+                        <p className="bg-gray-100 p-2 rounded mt-1 whitespace-pre-wrap">
+                          {item.extracted_text}
+                        </p>
+                      </div>
+                    )}
 
-              {/* Recommended Medicines */}
-              {item.medicines?.length > 0 && (
-                <div className="mb-2">
-                  <strong>Medicines:</strong>
-                  <ul className="list-disc ml-6 mt-1">
-                    {item.medicines.map((med, idx) => (
-                      <li key={idx}>
-                        {med.brand} →{" "}
-                        <span className="text-green-700">{med.generic}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+                    {/* Recommended Medicines */}
+                    {item.medicines?.length > 0 && (
+                      <div className="mb-2">
+                        <strong>Medicines:</strong>
+                        <ul className="list-disc ml-6 mt-1">
+                          {item.medicines.map((med, idx) => (
+                            <li key={idx}>
+                              {med.brand} →{" "}
+                              <span className="text-green-700">
+                                {med.generic}
+                              </span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
 
-              {/* Dosage */}
-              {item.duration && (
-                <div className="mb-2">
-                  <strong>Dosage Duration:</strong> {item.duration}
-                </div>
-              )}
+                    {/* Dosage */}
+                    {item.duration && (
+                      <div className="mb-2">
+                        <strong>Dosage Duration:</strong> {item.duration}
+                      </div>
+                    )}
 
-              {/* Exercise / Advice */}
-              {item.exercise && (
-                <div className="mb-2">
-                  <strong>Care / Exercise:</strong> {item.exercise}
-                </div>
-              )}
-            </div>
-          ))}
+                    {/* Exercise / Advice */}
+                    {item.exercise && (
+                      <div className="mb-2">
+                        <strong>Care / Exercise:</strong> {item.exercise}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
 
-        </div>
-      )}
-
-      {/* Disclaimer */}
-      <p className="text-xs text-gray-400 mt-6 text-center">
-        ⚠️ AI-based medical history only. Always consult a licensed doctor.
-      </p>
-    </div>
+            {/* Disclaimer */}
+            <p className="text-xs text-gray-400 mt-6 text-center">
+              ⚠️ AI-based medical history only. Always consult a licensed doctor.
+            </p>
+          </>
+        )}
+      </div>
+    </>
   );
 }

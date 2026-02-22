@@ -1,12 +1,13 @@
-// frontend/src/api.js
+// src/services/api.js
 
 import axios from "axios";
+import { getToken } from "../utils/auth";
 
 // ----------------------------
 // Axios instance with defaults
 // ----------------------------
 const api = axios.create({
-  baseURL: "http://127.0.0.1:8000/api", // <-- your FaastAPI base URL
+  baseURL: "http://127.0.0.1:8000/api", // <-- your FastAPI base URL
   headers: {
     "Content-Type": "application/json",
   },
@@ -17,7 +18,7 @@ const api = axios.create({
 // ----------------------------
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token"); // JWT stored in localStorage
+    const token = getToken(); // Use the helper function to get token
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -27,7 +28,7 @@ api.interceptors.request.use(
 );
 
 // ----------------------------
-// Response interceptor for global error handling (optional)
+// Response interceptor for global error handling
 // ----------------------------
 api.interceptors.response.use(
   (response) => response,
@@ -47,79 +48,50 @@ api.interceptors.response.use(
 
 // 1️⃣ User Authentication
 export const signupUser = async (data) => {
-  try {
-    const response = await api.post("/auth/signup", data);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.post("/auth/signup", data);
+  return response.data;
 };
 
 export const loginUser = async (data) => {
-  try {
-    const response = await api.post("/auth/login", data);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.post("/auth/login", data);
+  return response.data;
 };
 
 // 2️⃣ Symptom Search & AI Recommendations
 export const getSymptomRecommendation = async (symptoms) => {
-  try {
-    const response = await api.post("/symptoms/recommend", { symptoms });
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.post("/symptoms/recommend", { symptoms });
+  return response.data;
 };
 
 // 3️⃣ Prescription Upload
 export const uploadPrescription = async (formData) => {
-  try {
-    const response = await api.post("/prescription/upload", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.post("/prescription/upload", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
 };
 
-// 4️⃣ Get Recommendations (based on uploaded prescription or history)
+// 4️⃣ Get Recommendations (based on uploaded prescription)
 export const getRecommendationByPrescription = async (prescriptionId) => {
-  try {
-    const response = await api.get(`/medicine/generic/${brandName}`);
-
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.get(`/medicine/recommend/${prescriptionId}`);
+  return response.data;
 };
 
-// 5️⃣ History
+// 5️⃣ User History
 export const getUserHistory = async () => {
-  try {
-    const response = await api.get("/history");
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.get("/history");
+  return response.data;
 };
 
 // 6️⃣ Generic Medicines Suggestion
 export const getGenericMedicine = async (brandName) => {
-  try {
-    const response = await api.get(`/medicine/generic/${brandName}`);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await api.get(`/medicine/generic/${brandName}`);
+  return response.data;
 };
 
 // ----------------------------
-// Export the axios instance if needed
+// Export the Axios instance if needed
 // ----------------------------
 export default api;
