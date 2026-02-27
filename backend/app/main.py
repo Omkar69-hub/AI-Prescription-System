@@ -35,12 +35,12 @@ app.add_middleware(
 @app.on_event("startup")
 async def startup_db():
     await connect_db()
-    print("✅ Database connected")
+    print("OK: Database connected")
 
 @app.on_event("shutdown")
 async def shutdown_db():
     await close_db()
-    print("❌ Database disconnected")
+    print("INFO: Database disconnected")
 
 # ----------------------------
 # Routers
