@@ -4,7 +4,30 @@ import {
   Stethoscope, Mail, Lock, AlertCircle, ArrowRight,
   ShieldCheck, Loader2, User, Users, Phone, Eye, EyeOff
 } from "lucide-react";
+import { useGoogleLogin } from "@react-oauth/google";
 import { signupUser } from "../services/api";
+import api from "../services/api";
+
+// ─── Google icon SVG ──────────────────────────────────────────────────────────
+const GoogleIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 48 48" fill="none">
+    <path d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z" fill="#FFC107" />
+    <path d="M6.3 14.7l7 5.1C15.1 16.1 19.2 13 24 13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 16.3 2 9.7 7.4 6.3 14.7z" fill="#FF3D00" />
+    <path d="M24 46c5.5 0 10.5-1.9 14.3-5.1l-6.6-5.6C29.6 36.9 26.9 38 24 38c-6.1 0-10.7-3.9-11.8-9.3L5.1 34.1C8.5 40.5 15.6 46 24 46z" fill="#4CAF50" />
+    <path d="M44.5 20H24v8.5h11.8c-0.6 2.6-2.1 4.8-4.3 6.3l6.6 5.6C42.3 37.3 45 31 45 24c0-1.3-.2-2.7-.5-4z" fill="#1976D2" />
+  </svg>
+);
+
+// ─── Divider ──────────────────────────────────────────────────────────────────
+function Divider() {
+  return (
+    <div className="flex items-center gap-3 my-1">
+      <div className="flex-1 h-px bg-slate-200" />
+      <span className="text-xs text-slate-400 font-medium">or</span>
+      <div className="flex-1 h-px bg-slate-200" />
+    </div>
+  );
+}
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -20,6 +43,7 @@ export default function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoad] = useState(false);
   const [error, setError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [phoneTouched, setPhoneTouched] = useState(false);
@@ -30,18 +54,52 @@ export default function Signup() {
     const raw = e.target.value;
     const digits = raw.replace(/\D/g, "");
     setPhoneTouched(true);
-    if (digits.length === 0) {
-      setPhoneError("");
-    } else if (raw !== digits) {
-      setPhoneError("Only numbers are allowed in this field.");
-    } else if (digits.length < 10) {
-      setPhoneError("Phone number must be at least 10 digits.");
-    } else {
-      setPhoneError("");
-    }
+    if (digits.length === 0) setPhoneError("");
+    else if (raw !== digits) setPhoneError("Only numbers are allowed in this field.");
+    else if (digits.length < 10) setPhoneError("Phone number must be at least 10 digits.");
+    else setPhoneError("");
     setFormData((p) => ({ ...p, phone: digits }));
   };
 
+  // ── After successful Google signup/login ──────────────────────────────────
+  const onGoogleSuccess = (data) => {
+    localStorage.setItem("auth", JSON.stringify({
+      token: data.access_token,
+      role: data.role,
+      user: data.user,
+    }));
+    const redirectPath =
+      data.redirect ||
+      (data.role === "admin" ? "/admin/dashboard" :
+        data.role === "doctor" ? "/doctor/history" :
+          "/user/symptom-search");
+    navigate(redirectPath);
+  };
+
+  // ── Google signup ─────────────────────────────────────────────────────────
+  const googleSignup = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setGoogleLoad(true); setError("");
+      try {
+        localStorage.removeItem("auth");
+        const res = await api.post("/auth/google", {
+          access_token: tokenResponse.access_token,
+          role: formData.role,
+        });
+        onGoogleSuccess(res.data);
+      } catch (err) {
+        setError(
+          err.response?.data?.detail ||
+          "Google signup failed. Please try again or register manually."
+        );
+      } finally {
+        setGoogleLoad(false);
+      }
+    },
+    onError: () => setError("Google sign-in was cancelled or failed. Please try again."),
+  });
+
+  // ── Email/password signup ─────────────────────────────────────────────────
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
@@ -82,6 +140,7 @@ export default function Signup() {
 
       <div className="relative z-10 w-full max-w-lg">
         <div className="glass-card p-10 rounded-3xl shadow-2xl border border-white/40">
+
           {/* Header */}
           <div className="flex flex-col items-center mb-8">
             <div className="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-200 mb-4">
@@ -101,7 +160,8 @@ export default function Signup() {
           )}
 
           <form onSubmit={handleSignup} className="space-y-5">
-            {/* Name + Role */}
+
+            {/* Name + Account Type */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">Full Name <span className="text-red-400">*</span></label>
@@ -147,17 +207,14 @@ export default function Signup() {
                     onChange={handlePhoneChange}
                     onBlur={() => {
                       setPhoneTouched(true);
-                      if (formData.phone.length > 0 && formData.phone.length < 10) {
+                      if (formData.phone.length > 0 && formData.phone.length < 10)
                         setPhoneError("Phone number must be at least 10 digits.");
-                      } else if (formData.phone.length === 0) {
+                      else if (formData.phone.length === 0)
                         setPhoneError("");
-                      }
                     }}
                     onKeyDown={(e) => {
-                      // Silently block non-numeric keys — no error shown on keydown
-                      if (!/[0-9]/.test(e.key) && !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) {
+                      if (!/[0-9]/.test(e.key) && !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key))
                         e.preventDefault();
-                      }
                     }}
                   />
                 </div>
@@ -207,16 +264,31 @@ export default function Signup() {
               </div>
             </div>
 
+            {/* Submit */}
             <button type="submit" disabled={loading} className="w-full btn-primary flex items-center justify-center gap-2 py-4">
               {loading ? <Loader2 className="animate-spin" size={20} /> : <><ArrowRight size={20} /> Create Account</>}
             </button>
           </form>
 
+          {/* Divider + Google */}
+          <div className="mt-5">
+            <Divider />
+            <button
+              type="button"
+              disabled={googleLoading}
+              onClick={() => googleSignup()}
+              className="mt-4 w-full flex items-center justify-center gap-3 px-4 py-3.5 bg-white border border-slate-200 rounded-xl text-slate-700 font-semibold text-sm hover:bg-slate-50 hover:border-slate-300 hover:shadow-md transition-all duration-200 disabled:opacity-50"
+            >
+              {googleLoading ? <Loader2 className="animate-spin" size={18} /> : <GoogleIcon />}
+              Continue with Google
+            </button>
+          </div>
+
+          {/* Footer */}
           <div className="mt-8 pt-6 border-t border-slate-100 text-center text-slate-600">
             Already have an account?{" "}
             <Link to="/login" className="text-emerald-600 font-bold hover:text-emerald-700 transition-colors">Login</Link>
           </div>
-
           <div className="mt-4 flex items-center justify-center gap-2 text-slate-400 text-xs">
             <ShieldCheck size={14} />
             Your data is protected by secure encryption
