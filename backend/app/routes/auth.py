@@ -1,10 +1,12 @@
 # backend/app/routes/auth.py
 
 from fastapi import APIRouter, HTTPException, Depends, status
-from fastapi.security import OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from app.models.user import UserCreate, UserOut, get_user_by_email
 from app.core.security import create_access_token, verify_password
+from app.core.database import get_database
+from motor.motor_asyncio import AsyncIOMotorDatabase
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -23,7 +25,7 @@ def verify_user_password(plain_password: str, hashed_password: str) -> bool:
 # Signup
 # ----------------------------
 @router.post("/signup", response_model=UserOut)
-async def signup(user: UserCreate, db = Depends(get_database)):
+async def signup(user: UserCreate, db: AsyncIOMotorDatabase = Depends(get_database)):
     existing_user = await get_user_by_email(user.email, db)
     if existing_user:
         raise HTTPException(
@@ -44,14 +46,12 @@ async def signup(user: UserCreate, db = Depends(get_database)):
 # ----------------------------
 # Login
 # ----------------------------
-from pydantic import BaseModel
-
 class LoginRequest(BaseModel):
     email: str
     password: str
 
 @router.post("/login")
-async def login(login_data: LoginRequest, db = Depends(get_database)):
+async def login(login_data: LoginRequest, db: AsyncIOMotorDatabase = Depends(get_database)):
     user = await db["users"].find_one({"email": login_data.email})
     
     if not user or not verify_user_password(login_data.password, user.get("hashed_password") or ""):
@@ -63,7 +63,6 @@ async def login(login_data: LoginRequest, db = Depends(get_database)):
     token_data = {"user_id": str(user["_id"]), "role": user.get("role", "patient")}
     access_token = create_access_token(token_data)
 
-    # Return role to frontend for easier routing
     return {
         "access_token": access_token,
         "token_type": "bearer",

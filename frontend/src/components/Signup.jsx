@@ -35,6 +35,9 @@ export default function Signup() {
     setLoading(true);
 
     try {
+      // Clear any old session before signup
+      localStorage.removeItem("auth");
+
       await signupUser({
         email,
         password,

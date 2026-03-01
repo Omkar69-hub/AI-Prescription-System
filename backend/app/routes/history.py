@@ -1,6 +1,7 @@
 # backend/app/routes/history.py
 
 from fastapi import APIRouter, Depends, HTTPException
+from typing import List
 from app.models.history import HistoryCreate, HistoryOut, create_history, get_history_by_user
 from app.core.database import get_database
 from motor.motor_asyncio import AsyncIOMotorDatabase

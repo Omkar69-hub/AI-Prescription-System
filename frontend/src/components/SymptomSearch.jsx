@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Activity,
   Search,
@@ -14,6 +15,7 @@ import { getSymptomRecommendation } from "../services/api";
 import Layout from "./Layout";
 
 export default function SymptomSearch() {
+  const navigate = useNavigate();
   const [symptoms, setSymptoms] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -31,10 +33,11 @@ export default function SymptomSearch() {
 
     try {
       const data = await getSymptomRecommendation(symptoms);
-      setResult(data);
+      // Navigate to the results page with data
+      navigate("/user/recommendation", { state: data });
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.message || err.response?.data?.detail || "Our AI is currently unable to process your request. Please try again in a moment.");
+      setError(err.response?.data?.detail || "Our AI is currently unable to process your request. Please try again or consult a doctor.");
     } finally {
       setLoading(false);
     }

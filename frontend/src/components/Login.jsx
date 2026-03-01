@@ -25,6 +25,9 @@ export default function Login() {
     setLoading(true);
 
     try {
+      // Clear any old session before attempting new login
+      localStorage.removeItem("auth");
+
       const data = await loginUser({ email, password });
 
       // Save auth data in the format expected by utils/auth.js
@@ -38,6 +41,7 @@ export default function Login() {
       if (data.role === "admin") {
         navigate("/admin/dashboard");
       } else {
+        // Redirect to Symptoms Search as requested
         navigate("/user/symptom-search");
       }
 
