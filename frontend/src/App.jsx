@@ -2,10 +2,9 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { getToken, getRole } from "./utils/auth";
 
-// Pages  
+// Pages
 import Home from "./pages/Home";
 import AdminDashboard from "./pages/AdminDashboard";
-import UserDashboard from "./pages/UserDashboard";
 
 // Components
 import Login from "./components/Login";
@@ -14,87 +13,75 @@ import SymptomSearch from "./components/SymptomSearch";
 import UploadPrescription from "./components/UploadPrescription";
 import Recommendation from "./components/Recommendation";
 import History from "./components/History";
+import DoctorPatientHistory from "./components/DoctorPatientHistory";
 
 /* ===========================
-   AUTH PROTECTION COMPONENTS
+   AUTH PROTECTION
 =========================== */
-
-// 🔐 Check if user is logged in
 const RequireAuth = ({ children }) => {
   const token = getToken();
   return token ? children : <Navigate to="/login" replace />;
 };
 
-// 🛡 Check if user has required role
-const RequireRole = ({ children, allowedRole }) => {
+const RequireRole = ({ children, allowedRoles }) => {
   const role = getRole();
-  return role === allowedRole ? children : <Navigate to="/" replace />;
+  const allowed = Array.isArray(allowedRoles) ? allowedRoles : [allowedRoles];
+  return allowed.includes(role) ? children : <Navigate to="/" replace />;
 };
 
 function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Routes */}
+        {/* Public */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* ================= USER ROUTES ================= */}
-        <Route
-          path="/user-dashboard"
-          element={
-            <RequireAuth>
-              <Navigate to="/user/symptom-search" replace />
-            </RequireAuth>
-          }
-        />
+        {/* ── Patient Routes ── */}
         <Route
           path="/user/symptom-search"
-          element={
-            <RequireAuth>
-              <SymptomSearch />
-            </RequireAuth>
-          }
+          element={<RequireAuth><SymptomSearch /></RequireAuth>}
         />
         <Route
           path="/user/upload-prescription"
-          element={
-            <RequireAuth>
-              <UploadPrescription />
-            </RequireAuth>
-          }
+          element={<RequireAuth><UploadPrescription /></RequireAuth>}
         />
         <Route
           path="/user/recommendation"
-          element={
-            <RequireAuth>
-              <Recommendation />
-            </RequireAuth>
-          }
+          element={<RequireAuth><Recommendation /></RequireAuth>}
         />
         <Route
           path="/user/history"
+          element={<RequireAuth><History /></RequireAuth>}
+        />
+
+        {/* ── Doctor Route ── */}
+        <Route
+          path="/doctor/history"
           element={
             <RequireAuth>
-              <History />
+              <RequireRole allowedRoles={["doctor", "admin"]}>
+                <DoctorPatientHistory />
+              </RequireRole>
             </RequireAuth>
           }
         />
 
-        {/* ================= ADMIN ROUTE ================= */}
+        {/* ── Admin Route ── */}
         <Route
           path="/admin/dashboard"
           element={
             <RequireAuth>
-              <RequireRole allowedRole="admin">
+              <RequireRole allowedRoles={["admin"]}>
                 <AdminDashboard />
               </RequireRole>
             </RequireAuth>
           }
         />
 
-        {/* Catch-all */}
+        {/* Catch-all redirects */}
+        <Route path="/user-dashboard" element={<Navigate to="/user/symptom-search" replace />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

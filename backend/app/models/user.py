@@ -3,11 +3,9 @@
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from bson import ObjectId
-from fastapi import Depends
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.core.security import get_password_hash, verify_password
-from app.core.database import get_database
 
 # ----------------------------
 # Helper class to handle ObjectId
@@ -33,6 +31,8 @@ class PyObjectId(ObjectId):
 class UserBase(BaseModel):
     email: EmailStr
     full_name: Optional[str] = None
+    phone: Optional[str] = None
+    role: Optional[str] = "patient"
 
 class UserCreate(UserBase):
     password: str
@@ -57,14 +57,12 @@ async def create_user(user: UserCreate, db: AsyncIOMotorDatabase) -> UserOut:
     result = await db["users"].insert_one(user_dict)
     return UserOut(**user_dict, _id=result.inserted_id)
 
-async def get_user_by_email(email: str, db: AsyncIOMotorDatabase) -> Optional[UserInDB]:
+async def get_user_by_email(email: str, db: AsyncIOMotorDatabase):
     user_data = await db["users"].find_one({"email": email})
-    if user_data:
-        return UserInDB(**user_data)
-    return None
+    return user_data  # return raw dict for flexibility
 
 async def verify_user(email: str, password: str, db: AsyncIOMotorDatabase) -> bool:
     user = await get_user_by_email(email, db)
     if not user:
         return False
-    return verify_password(password, user.hashed_password)
+    return verify_password(password, user.get("hashed_password", ""))

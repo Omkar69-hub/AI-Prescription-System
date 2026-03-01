@@ -1,52 +1,53 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
-  Stethoscope,
-  Mail,
-  Lock,
-  AlertCircle,
-  ArrowRight,
-  ShieldCheck,
-  Loader2,
-  User,
-  Users
+  Stethoscope, Mail, Lock, AlertCircle, ArrowRight,
+  ShieldCheck, Loader2, User, Users, Phone, Eye, EyeOff
 } from "lucide-react";
 import { signupUser } from "../services/api";
 
 export default function Signup() {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("patient");
+  const [formData, setFormData] = useState({
+    full_name: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+    role: "patient",
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const handle = (field) => (e) => setFormData((p) => ({ ...p, [field]: e.target.value }));
 
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match. Please verify them.");
+      return;
+    }
+    if (formData.phone && !/^\d{10,15}$/.test(formData.phone.replace(/\s/g, ""))) {
+      setError("Please enter a valid phone number.");
       return;
     }
 
     setLoading(true);
-
     try {
-      // Clear any old session before signup
       localStorage.removeItem("auth");
-
       await signupUser({
-        email,
-        password,
-        role,
+        email: formData.email,
+        password: formData.password,
+        full_name: formData.full_name,
+        phone: formData.phone,
+        role: formData.role,
       });
-
-      // Show success state or redirect
       navigate("/login", { state: { message: "Account created successfully! Please sign in." } });
-
     } catch (err) {
       setError(err.response?.data?.detail || "Signup failed. This email might already be registered.");
     } finally {
@@ -54,28 +55,26 @@ export default function Signup() {
     }
   };
 
+  const inputCls = "input-field pl-11";
+
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-6 relative overflow-hidden">
-      {/* Aesthetic Background Blobs */}
       <div className="absolute -top-24 -right-24 w-96 h-96 bg-emerald-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-float" />
-      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-indigo-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-float" style={{ animationDelay: '2s' }} />
+      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-indigo-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50 animate-float" style={{ animationDelay: "2s" }} />
 
       <div className="relative z-10 w-full max-w-lg">
         <div className="glass-card p-10 rounded-3xl shadow-2xl border border-white/40">
-          {/* Logo & Header */}
+          {/* Header */}
           <div className="flex flex-col items-center mb-8">
             <div className="w-14 h-14 bg-emerald-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-emerald-200 mb-4">
               <Stethoscope size={30} />
             </div>
-            <h2 className="text-3xl font-bold text-slate-900 font-outfit text-center">
-              Join Us
-            </h2>
+            <h2 className="text-3xl font-bold text-slate-900 font-outfit text-center">Join Us</h2>
             <p className="text-slate-500 mt-2 text-center text-balance px-4">
               Get started with your intelligent health management system
             </p>
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
               <AlertCircle size={20} className="shrink-0 mt-0.5" />
@@ -83,37 +82,21 @@ export default function Signup() {
             </div>
           )}
 
-          {/* Signup Form */}
-          <form onSubmit={handleSignup} className="space-y-6">
+          <form onSubmit={handleSignup} className="space-y-5">
+            {/* Name + Role */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">Email Address</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">Full Name <span className="text-red-400">*</span></label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                    <Mail size={18} />
-                  </div>
-                  <input
-                    type="email"
-                    required
-                    className="input-field pl-11"
-                    placeholder="name@example.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400"><User size={18} /></div>
+                  <input type="text" required className={inputCls} placeholder="John Doe" value={formData.full_name} onChange={handle("full_name")} />
                 </div>
               </div>
-
               <div>
                 <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">Account Type</label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                    <Users size={18} />
-                  </div>
-                  <select
-                    className="input-field pl-11 appearance-none"
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                  >
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400"><Users size={18} /></div>
+                  <select className="input-field pl-11 appearance-none" value={formData.role} onChange={handle("role")}>
                     <option value="patient">Patient</option>
                     <option value="doctor">Doctor</option>
                     <option value="admin">Admin</option>
@@ -122,73 +105,75 @@ export default function Signup() {
               </div>
             </div>
 
+            {/* Email + Phone */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">Password</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">Email Address <span className="text-red-400">*</span></label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                    <Lock size={18} />
-                  </div>
-                  <input
-                    type="password"
-                    required
-                    className="input-field pl-11"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400"><Mail size={18} /></div>
+                  <input type="email" required className={inputCls} placeholder="name@example.com" value={formData.email} onChange={handle("email")} />
                 </div>
               </div>
-
               <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">Confirm Password</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">Phone Number <span className="text-red-400">*</span></label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                    <Lock size={18} />
-                  </div>
-                  <input
-                    type="password"
-                    required
-                    className="input-field pl-11"
-                    placeholder="••••••••"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400"><Phone size={18} /></div>
+                  <input type="tel" required className={inputCls} placeholder="9876543210" value={formData.phone} onChange={handle("phone")} />
                 </div>
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full btn-primary flex items-center justify-center gap-2 py-4"
-            >
-              {loading ? (
-                <Loader2 className="animate-spin" size={20} />
-              ) : (
-                <>
-                  Create Account <ArrowRight size={20} />
-                </>
-              )}
+            {/* Password + Confirm */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">Password <span className="text-red-400">*</span></label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400"><Lock size={18} /></div>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    required
+                    className="input-field pl-11 pr-11"
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={handle("password")}
+                  />
+                  <button type="button" onClick={() => setShowPassword((v) => !v)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600">
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">Confirm Password <span className="text-red-400">*</span></label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400"><Lock size={18} /></div>
+                  <input
+                    type={showConfirm ? "text" : "password"}
+                    required
+                    className="input-field pl-11 pr-11"
+                    placeholder="••••••••"
+                    value={formData.confirmPassword}
+                    onChange={handle("confirmPassword")}
+                  />
+                  <button type="button" onClick={() => setShowConfirm((v) => !v)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600">
+                    {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button type="submit" disabled={loading} className="w-full btn-primary flex items-center justify-center gap-2 py-4">
+              {loading ? <Loader2 className="animate-spin" size={20} /> : <><ArrowRight size={20} /> Create Account</>}
             </button>
           </form>
 
-          {/* Footer Navigation */}
           <div className="mt-8 pt-6 border-t border-slate-100 text-center text-slate-600">
             Already have an account?{" "}
-            <Link to="/login" className="text-emerald-600 font-bold hover:text-emerald-700 transition-colors">
-              Sign in
-            </Link>
+            <Link to="/login" className="text-emerald-600 font-bold hover:text-emerald-700 transition-colors">Sign in</Link>
           </div>
 
-          <div className="mt-6 flex flex-col items-center gap-2">
-            <div className="flex items-center gap-2 text-slate-400 text-xs">
-              <ShieldCheck size={14} />
-              Your data is protected by secure encryption
-            </div>
-            <p className="text-[10px] text-slate-400 text-center leading-tight">
-              By joining, you agree to our terms and conditions for AI-assisted health guidance.
-            </p>
+          <div className="mt-4 flex items-center justify-center gap-2 text-slate-400 text-xs">
+            <ShieldCheck size={14} />
+            Your data is protected by secure encryption
           </div>
         </div>
       </div>
