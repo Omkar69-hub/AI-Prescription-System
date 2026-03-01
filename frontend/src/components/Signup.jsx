@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
   Stethoscope, Mail, Lock, AlertCircle, ArrowRight,
@@ -28,10 +28,9 @@ export default function Signup() {
 
   const handlePhoneChange = (e) => {
     const raw = e.target.value;
-    const digits = raw.replace(/\D/g, ""); // strip all non-digits
+    const digits = raw.replace(/\D/g, "");
     setPhoneTouched(true);
     if (digits.length === 0) {
-      // Field cleared — no error while empty
       setPhoneError("");
     } else if (raw !== digits) {
       setPhoneError("Only numbers are allowed in this field.");
@@ -155,8 +154,8 @@ export default function Signup() {
                       }
                     }}
                     onKeyDown={(e) => {
-                      // Block non-numeric keys silently — no error on keydown
-                      if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
+                      // Silently block non-numeric keys — no error shown on keydown
+                      if (!/[0-9]/.test(e.key) && !["Backspace", "Delete", "Tab", "ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) {
                         e.preventDefault();
                       }
                     }}
