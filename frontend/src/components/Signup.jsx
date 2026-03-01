@@ -21,8 +21,20 @@ export default function Signup() {
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
 
   const handle = (field) => (e) => setFormData((p) => ({ ...p, [field]: e.target.value }));
+
+  const handlePhoneChange = (e) => {
+    const raw = e.target.value;
+    const digits = raw.replace(/\D/g, ""); // strip all non-digits
+    if (raw !== digits) {
+      setPhoneError("Only numbers are allowed in this field.");
+    } else {
+      setPhoneError("");
+    }
+    setFormData((p) => ({ ...p, phone: digits }));
+  };
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -32,8 +44,8 @@ export default function Signup() {
       setError("Passwords do not match. Please verify them.");
       return;
     }
-    if (formData.phone && !/^\d{10,15}$/.test(formData.phone.replace(/\s/g, ""))) {
-      setError("Please enter a valid phone number.");
+    if (!formData.phone || !/^\d{10,15}$/.test(formData.phone)) {
+      setError("Please enter a valid 10-15 digit phone number (numbers only).");
       return;
     }
 
@@ -118,8 +130,29 @@ export default function Signup() {
                 <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">Phone Number <span className="text-red-400">*</span></label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400"><Phone size={18} /></div>
-                  <input type="tel" required className={inputCls} placeholder="9876543210" value={formData.phone} onChange={handle("phone")} />
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    required
+                    className={`${inputCls} ${phoneError ? "border-red-300 focus:border-red-500 focus:ring-red-500/10" : ""}`}
+                    placeholder="9876543210"
+                    value={formData.phone}
+                    maxLength={15}
+                    onChange={handlePhoneChange}
+                    onKeyDown={(e) => {
+                      // Block non-numeric keys except control keys
+                      if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
+                        e.preventDefault();
+                        setPhoneError("Only numeric digits are allowed.");
+                      }
+                    }}
+                  />
                 </div>
+                {phoneError && (
+                  <p className="text-red-500 text-xs mt-1 ml-1 font-semibold flex items-center gap-1">
+                    <span>⚠</span> {phoneError}
+                  </p>
+                )}
               </div>
             </div>
 

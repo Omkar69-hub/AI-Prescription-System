@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from fastapi.requests import Request
 
 from app.routes import prescriptions
-from app.routes import auth, ocr, nlp, recommend, history, medicines
+from app.routes import auth, ocr, nlp, recommend, history, medicines, admin
 from app.core.database import connect_db, close_db
 
 app = FastAPI(
@@ -51,6 +51,7 @@ app.include_router(nlp.router, prefix="/api/nlp", tags=["NLP"])
 app.include_router(recommend.router, prefix="/api/symptoms", tags=["Recommendations"])
 app.include_router(history.router, prefix="/api/history", tags=["History"])
 app.include_router(medicines.router, prefix="/api/medicines", tags=["Medicines"])
+app.include_router(admin.router, prefix="/api/admin", tags=["Admin"])
 app.include_router(prescriptions.router)
 # ----------------------------
 # Root endpoint
