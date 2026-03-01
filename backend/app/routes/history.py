@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.models.history import HistoryCreate, HistoryOut, create_history, get_history_by_user
 from app.core.database import get_database
 from motor.motor_asyncio import AsyncIOMotorDatabase
-from typing import List
+from app.core.security import get_current_user_id
 
 router = APIRouter()
 
@@ -12,9 +12,9 @@ router = APIRouter()
 # Get user history
 # ----------------------------
 @router.get("/", response_model=List[HistoryOut])
-async def get_history(user_id: str, db: AsyncIOMotorDatabase = Depends(get_database)):
+async def get_history(user_id: str = Depends(get_current_user_id), db: AsyncIOMotorDatabase = Depends(get_database)):
     """
-    Get all history records for a specific user
+    Get all history records for the authenticated user
     """
     try:
         return await get_history_by_user(user_id, db)

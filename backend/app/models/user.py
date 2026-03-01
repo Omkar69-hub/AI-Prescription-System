@@ -51,19 +51,19 @@ class UserInDB(UserBase):
 # ----------------------------
 # Database helper functions
 # ----------------------------
-async def create_user(user: UserCreate, db: AsyncIOMotorDatabase = Depends(get_database)) -> UserOut:
+async def create_user(user: UserCreate, db: AsyncIOMotorDatabase) -> UserOut:
     user_dict = user.dict()
     user_dict["hashed_password"] = get_password_hash(user_dict.pop("password"))
     result = await db["users"].insert_one(user_dict)
     return UserOut(**user_dict, _id=result.inserted_id)
 
-async def get_user_by_email(email: str, db: AsyncIOMotorDatabase = Depends(get_database)) -> Optional[UserInDB]:
+async def get_user_by_email(email: str, db: AsyncIOMotorDatabase) -> Optional[UserInDB]:
     user_data = await db["users"].find_one({"email": email})
     if user_data:
         return UserInDB(**user_data)
     return None
 
-async def verify_user(email: str, password: str, db: AsyncIOMotorDatabase = Depends(get_database)) -> bool:
+async def verify_user(email: str, password: str, db: AsyncIOMotorDatabase) -> bool:
     user = await get_user_by_email(email, db)
     if not user:
         return False

@@ -42,10 +42,10 @@ function App() {
 
         {/* ================= USER ROUTES ================= */}
         <Route
-          path="/user/dashboard"
+          path="/user-dashboard"
           element={
             <RequireAuth>
-              <UserDashboard />
+              <Navigate to="/user/symptom-search" replace />
             </RequireAuth>
           }
         />

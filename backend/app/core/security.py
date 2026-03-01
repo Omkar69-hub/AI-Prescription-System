@@ -47,6 +47,8 @@ def create_access_token(
 # ----------------------------
 # JWT Token Verification
 # ----------------------------
+from fastapi import Request, HTTPException, status
+
 def verify_access_token(token: str):
     """Verify JWT token and return payload or None"""
     try:
@@ -58,3 +60,23 @@ def verify_access_token(token: str):
         return payload
     except JWTError:
         return None
+
+async def get_current_user_id(request: Request) -> str:
+    """Dependency to get user_id from token in headerm"""
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Not authenticated",
+        )
+    
+    token = auth_header.split(" ")[1]
+    payload = verify_access_token(token)
+    
+    if not payload or "user_id" not in payload:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token",
+        )
+    
+    return payload["user_id"]

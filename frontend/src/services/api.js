@@ -63,9 +63,9 @@ export const getSymptomRecommendation = async (symptoms) => {
   return response.data;
 };
 
-// 3️⃣ Prescription Upload
+// 3️⃣ Prescription Upload (Note matching backend /ocr/upload)
 export const uploadPrescription = async (formData) => {
-  const response = await api.post("/prescription/upload", formData, {
+  const response = await api.post("/ocr/upload", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },

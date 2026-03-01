@@ -1,3 +1,45 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --font-inter: "Inter", sans-serif;
+  --font-outfit: "Outfit", sans-serif;
+  --color-brand-primary: #0f172a;
+  --color-brand-secondary: #334155;
+  --color-accent-emerald: #10b981;
+  --color-accent-indigo: #6366f1;
+}
+
+@layer base {
+  body {
+    @apply font-inter antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-outfit font-semibold;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-xl;
+  }
+  .btn-primary {
+    @apply px-6 py-3 bg-accent-emerald hover:bg-emerald-600 text-white rounded-xl transition-all duration-300 font-medium shadow-lg hover:shadow-emerald-200 hover:-translate-y-0.5;
+  }
+  .btn-secondary {
+    @apply px-6 py-3 bg-white hover:bg-slate-50 text-brand-primary border border-slate-200 rounded-xl transition-all duration-300 font-medium shadow-md hover:-translate-y-0.5;
+  }
+  .input-field {
+    @apply w-full px-4 py-3 bg-white/50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-accent-emerald/20 focus:border-accent-emerald transition-all outline-none;
+  }
+}
+
+/* Custom Micro-animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}

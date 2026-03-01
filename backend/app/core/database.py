@@ -14,6 +14,10 @@ async def connect_db():
     database = client[settings.DATABASE_NAME]
     print(f"[OK] MongoDB connected: {settings.DATABASE_NAME}")
 
+# Global access (will be None until connect_db is called)
+def get_db() -> AsyncIOMotorDatabase:
+    return database
+
 
 # ----------------------------
 # Disconnect MongoDB

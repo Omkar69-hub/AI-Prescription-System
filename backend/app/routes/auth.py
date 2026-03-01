@@ -23,19 +23,20 @@ def verify_user_password(plain_password: str, hashed_password: str) -> bool:
 # Signup
 # ----------------------------
 @router.post("/signup", response_model=UserOut)
-async def signup(user: UserCreate):
-    existing_user = await get_user_by_email(user.email)
+async def signup(user: UserCreate, db = Depends(get_database)):
+    existing_user = await get_user_by_email(user.email, db)
     if existing_user:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered."
         )
 
-    hashed_pw = hash_password(user.password)
     user_dict = user.dict()
-    user_dict["hashed_password"] = hashed_pw
+    user_dict["hashed_password"] = hash_password(user_dict.pop("password"))
+    # Default role if not provided
+    if "role" not in user_dict:
+        user_dict["role"] = "patient"
 
-    from app.core.database import db
     result = await db["users"].insert_one(user_dict)
     user_out = UserOut(**user_dict, _id=result.inserted_id)
     return user_out
@@ -43,22 +44,33 @@ async def signup(user: UserCreate):
 # ----------------------------
 # Login
 # ----------------------------
+from pydantic import BaseModel
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
 @router.post("/login")
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    from app.core.database import db
-    user = await db["users"].find_one({"email": form_data.username})
-    if not user or not verify_user_password(form_data.password, user["hashed_password"]):
+async def login(login_data: LoginRequest, db = Depends(get_database)):
+    user = await db["users"].find_one({"email": login_data.email})
+    
+    if not user or not verify_user_password(login_data.password, user.get("hashed_password") or ""):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid email or password",
-            headers={"WWW-Authenticate": "Bearer"},
         )
 
-    token_data = {"user_id": str(user["_id"])}
+    token_data = {"user_id": str(user["_id"]), "role": user.get("role", "patient")}
     access_token = create_access_token(token_data)
 
+    # Return role to frontend for easier routing
     return {
         "access_token": access_token,
         "token_type": "bearer",
-        "user": UserOut(**user, _id=user["_id"])
+        "role": user.get("role", "patient"),
+        "user": {
+            "email": user["email"],
+            "full_name": user.get("full_name"),
+            "role": user.get("role", "patient")
+        }
     }
