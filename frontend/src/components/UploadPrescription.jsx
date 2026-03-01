@@ -57,7 +57,15 @@ export default function UploadPrescription() {
       setResult(data);
     } catch (err) {
       console.error(err);
-      setError("We encountered an error processing your prescription. Please ensure the file is clear and try again.");
+      // Surface the server's specific error message when available
+      const serverMsg =
+        err?.response?.data?.detail ||
+        err?.response?.data?.message ||
+        null;
+      setError(
+        serverMsg ||
+        "We encountered an error processing your prescription. Please ensure the image is clear and try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -182,7 +190,17 @@ export default function UploadPrescription() {
                     <CheckCircle2 size={22} className="text-white/80" />
                     <span className="font-bold tracking-tight">AI Extraction Report</span>
                   </div>
-                  <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-2 py-1 rounded">Confidence High</span>
+                  <div className="flex items-center gap-2">
+                    {result.medicine_count > 0 ? (
+                      <span className="text-[10px] font-black uppercase tracking-widest bg-white/20 px-2 py-1 rounded">
+                        {result.medicine_count} Medicine{result.medicine_count !== 1 ? "s" : ""} Found
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-black uppercase tracking-widest bg-amber-400/30 px-2 py-1 rounded">
+                        No Matches Found
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="p-8">

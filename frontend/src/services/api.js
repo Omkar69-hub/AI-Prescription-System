@@ -81,4 +81,20 @@ export const getGenericMedicine = async (brandName) => {
   return res.data;
 };
 
+// ─────────────────────────────
+// Current user profile
+// ─────────────────────────────
+export const getMe = async () => {
+  const res = await api.get("/auth/me");
+  return res.data;
+};
+
+// ─────────────────────────────
+// Notification log (admin use)
+// ─────────────────────────────
+export const getNotifications = async () => {
+  const res = await api.get("/auth/notifications");
+  return res.data;
+};
+
 export default api;

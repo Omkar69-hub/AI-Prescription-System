@@ -1,0 +1,13 @@
+Training date : 2026-03-01T19:05:48.637445Z
+Training accuracy : 1.0000
+
+                             precision    recall  f1-score   support
+
+  Common Cold / Viral Fever       1.00      1.00      1.00         3
+                  Dry Cough       1.00      1.00      1.00         2
+    Gastritis / Indigestion       1.00      1.00      1.00         4
+Tension Headache / Migraine       1.00      1.00      1.00         3
+
+                   accuracy                           1.00        12
+                  macro avg       1.00      1.00      1.00        12
+               weighted avg       1.00      1.00      1.00        12

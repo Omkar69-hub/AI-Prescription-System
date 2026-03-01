@@ -22,14 +22,21 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [phoneError, setPhoneError] = useState("");
+  const [phoneTouched, setPhoneTouched] = useState(false);
 
   const handle = (field) => (e) => setFormData((p) => ({ ...p, [field]: e.target.value }));
 
   const handlePhoneChange = (e) => {
     const raw = e.target.value;
     const digits = raw.replace(/\D/g, ""); // strip all non-digits
-    if (raw !== digits) {
+    setPhoneTouched(true);
+    if (digits.length === 0) {
+      // Field cleared — no error while empty
+      setPhoneError("");
+    } else if (raw !== digits) {
       setPhoneError("Only numbers are allowed in this field.");
+    } else if (digits.length < 10) {
+      setPhoneError("Phone number must be at least 10 digits.");
     } else {
       setPhoneError("");
     }
@@ -134,22 +141,29 @@ export default function Signup() {
                     type="text"
                     inputMode="numeric"
                     required
-                    className={`${inputCls} ${phoneError ? "border-red-300 focus:border-red-500 focus:ring-red-500/10" : ""}`}
-                    placeholder="9876543210"
+                    className={`${inputCls} ${phoneTouched && phoneError ? "border-red-300 focus:border-red-500 focus:ring-red-500/10" : ""}`}
+                    placeholder="e.g. 9876543210"
                     value={formData.phone}
                     maxLength={15}
                     onChange={handlePhoneChange}
+                    onBlur={() => {
+                      setPhoneTouched(true);
+                      if (formData.phone.length > 0 && formData.phone.length < 10) {
+                        setPhoneError("Phone number must be at least 10 digits.");
+                      } else if (formData.phone.length === 0) {
+                        setPhoneError("");
+                      }
+                    }}
                     onKeyDown={(e) => {
-                      // Block non-numeric keys except control keys
+                      // Block non-numeric keys silently — no error on keydown
                       if (!/[0-9]/.test(e.key) && !['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
                         e.preventDefault();
-                        setPhoneError("Only numeric digits are allowed.");
                       }
                     }}
                   />
                 </div>
-                {phoneError && (
-                  <p className="text-red-500 text-xs mt-1 ml-1 font-semibold flex items-center gap-1">
+                {phoneTouched && phoneError && (
+                  <p className="text-red-500 text-xs mt-1 ml-1 font-medium flex items-center gap-1">
                     <span>⚠</span> {phoneError}
                   </p>
                 )}

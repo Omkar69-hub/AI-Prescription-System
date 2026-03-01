@@ -1,0 +1,12 @@
+{
+  "trained_at": "2026-03-01T19:05:48.637445Z",
+  "accuracy": 1.0,
+  "classes": [
+    "Common Cold / Viral Fever",
+    "Dry Cough",
+    "Gastritis / Indigestion",
+    "Tension Headache / Migraine"
+  ],
+  "model_file": "C:\\Users\\Asus\\OneDrive\\Desktop\\AI Prescription System\\models\\saved\\symptom_classifier.pkl",
+  "encoder_file": "C:\\Users\\Asus\\OneDrive\\Desktop\\AI Prescription System\\models\\saved\\label_encoder.pkl"
+}
