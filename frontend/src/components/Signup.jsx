@@ -214,7 +214,7 @@ export default function Signup() {
 
           <div className="mt-8 pt-6 border-t border-slate-100 text-center text-slate-600">
             Already have an account?{" "}
-            <Link to="/login" className="text-emerald-600 font-bold hover:text-emerald-700 transition-colors">Sign in</Link>
+            <Link to="/login" className="text-emerald-600 font-bold hover:text-emerald-700 transition-colors">Login</Link>
           </div>
 
           <div className="mt-4 flex items-center justify-center gap-2 text-slate-400 text-xs">

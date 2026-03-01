@@ -1,22 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import {
   Stethoscope, Mail, Lock, AlertCircle, ArrowRight,
-  ShieldCheck, Loader2, CheckCircle2, Eye, EyeOff,
-  UserCog, User, Stethoscope as DoctorIcon, Bell
+  ShieldCheck, Loader2, CheckCircle2, Eye, EyeOff, Bell
 } from "lucide-react";
 import { loginUser } from "../services/api";
 
-// ─── Role badge config ────────────────────────────────────────────────────────
-const ROLE_META = {
-  admin: { label: "Admin", color: "bg-red-100 text-red-700 border-red-200", icon: <UserCog size={14} /> },
-  doctor: { label: "Doctor", color: "bg-blue-100 text-blue-700 border-blue-200", icon: <DoctorIcon size={14} /> },
-  patient: { label: "Patient", color: "bg-emerald-100 text-emerald-700 border-emerald-200", icon: <User size={14} /> },
-};
-
 // ─── Auto-dismissing welcome toast ───────────────────────────────────────────
 function WelcomeToast({ user, role, onDismiss }) {
-  const meta = ROLE_META[role] || ROLE_META.patient;
+  const roleLabel = role === "admin" ? "Admin" : role === "doctor" ? "Doctor" : "Patient";
   const first = user?.full_name?.split(" ")[0] || user?.email?.split("@")[0] || "there";
 
   useEffect(() => {
@@ -36,9 +28,8 @@ function WelcomeToast({ user, role, onDismiss }) {
           <p className="text-slate-500 text-xs mt-0.5 leading-relaxed">
             You're now signed in to the AI Prescription System.
           </p>
-          <div className={`inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-full text-[11px] font-bold border ${meta.color}`}>
-            {meta.icon}
-            {meta.label} Portal
+          <div className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-1 rounded-full text-[11px] font-bold border bg-emerald-100 text-emerald-700 border-emerald-200">
+            {roleLabel} Portal
           </div>
         </div>
         <button
@@ -136,18 +127,6 @@ export default function Login() {
               <h2 className="text-3xl font-bold text-slate-900 font-outfit text-center">Welcome Back</h2>
               <p className="text-slate-500 mt-2 text-center">Access your personalized medical assistant</p>
 
-              {/* Role indicator pills */}
-              <div className="flex items-center gap-2 mt-4 flex-wrap justify-center">
-                {Object.entries(ROLE_META).map(([key, meta]) => (
-                  <span
-                    key={key}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-bold border ${meta.color}`}
-                  >
-                    {meta.icon} {meta.label}
-                  </span>
-                ))}
-              </div>
-              <p className="text-[11px] text-slate-400 mt-2 text-center">All roles use this single sign-in page</p>
             </div>
 
             {/* Success message (from signup redirect) */}
@@ -162,12 +141,7 @@ export default function Login() {
             {error && (
               <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
                 <AlertCircle size={20} className="shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-medium">{error}</p>
-                  <p className="text-xs text-red-400 mt-1">
-                    Need help? Try resetting your account via the Admin panel.
-                  </p>
-                </div>
+                <p className="text-sm font-medium">{error}</p>
               </div>
             )}
 
@@ -222,19 +196,6 @@ export default function Login() {
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
-                </div>
-              </div>
-
-              {/* Demo credentials hint */}
-              <div className="rounded-xl bg-slate-50 border border-slate-100 px-4 py-3 text-[11px] text-slate-500 space-y-1">
-                <p className="font-bold text-slate-600 mb-1.5">Demo credentials (development only)</p>
-                <div className="grid grid-cols-3 gap-x-4 gap-y-1">
-                  <span className="font-semibold text-red-600">Admin</span>
-                  <span className="col-span-2">admin@aiprescription.com / Admin@123</span>
-                  <span className="font-semibold text-blue-600">Doctor</span>
-                  <span className="col-span-2">doctor@aiprescription.com / Doctor@123</span>
-                  <span className="font-semibold text-emerald-600">Patient</span>
-                  <span className="col-span-2">patient@aiprescription.com / Patient@123</span>
                 </div>
               </div>
 
