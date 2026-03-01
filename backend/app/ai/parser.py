@@ -34,20 +34,26 @@ def parse_dosage_and_timing(text: str, brand_name: str) -> dict:
 
     # 2. Timing Patterns
     timing = "As directed"
-    if re.search(r"before (food|meals|breakfast|lunch|dinner)|empty stomach|ac\b", relevant_context):
+    if re.search(r"befor|breakf|lunch|dinner|empty|stomach|ac\b", relevant_context):
         timing = "Before meals"
-    elif re.search(r"after (food|meals|breakfast|lunch|dinner)|pc\b", relevant_context):
+    elif re.search(r"after|pc\b", relevant_context):
         timing = "After meals"
-    elif re.search(r"night|before (bed|sleep)|hs\b", relevant_context):
+    elif re.search(r"night|bed|sleep|hs\b", relevant_context):
         timing = "At night"
 
     # 3. Duration Patterns
     duration = "N/A"
-    duration_match = re.search(r"for (\d+) (days|weeks|months)", relevant_context)
+    # Match things like "3 mon", "5 d", "1 wk"
+    duration_match = re.search(r"for (\d+) (day|mon|week|yr|d\b|m\b|w\b)", relevant_context)
     if duration_match:
-        duration = f"{duration_match.group(1)} {duration_match.group(2)}"
-    elif re.search(r"x (\d+) (days|weeks|months)", relevant_context):
-        m = re.search(r"x (\d+) (days|weeks|months)", relevant_context)
+        val = duration_match.group(1)
+        unit = duration_match.group(2)
+        if unit.startswith('d'): duration = f"{val} days"
+        elif unit.startswith('m'): duration = f"{val} months"
+        elif unit.startswith('w'): duration = f"{val} weeks"
+        else: duration = f"{val} {unit}"
+    elif re.search(r"x (\d+) (day|mon|week|d\b|m\b|w\b)", relevant_context):
+        m = re.search(r"x (\d+) (day|mon|week|d\b|m\b|w\b)", relevant_context)
         duration = f"{m.group(1)} {m.group(2)}"
 
     return {

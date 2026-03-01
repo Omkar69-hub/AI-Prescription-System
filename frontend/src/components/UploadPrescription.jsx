@@ -125,14 +125,14 @@ export default function UploadPrescription() {
               </div>
 
               <button
-                onClick={handleUpload}
+                onClick={(e) => { e.preventDefault(); handleUpload(); }}
                 disabled={loading || !file}
-                className="w-full btn-primary mt-6 flex items-center justify-center gap-2 py-4 shadow-indigo-100"
+                className={`w-full btn-primary mt-6 flex items-center justify-center gap-2 py-4 shadow-indigo-100 ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
               >
                 {loading ? (
                   <>
                     <Loader2 className="animate-spin" size={20} />
-                    Processing...
+                    Analyzing...
                   </>
                 ) : (
                   <>

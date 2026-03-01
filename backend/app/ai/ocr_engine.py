@@ -37,8 +37,9 @@ def extract_text_from_image(image_bytes: bytes) -> str:
     try:
         image = Image.open(io.BytesIO(image_bytes))
         processed_image = preprocess_image(image)
-        # Using preserve_interword_spaces for better parsing
-        text = pytesseract.image_to_string(processed_image, config="--psm 3")
+        # PSM 11: Sparse text. Find as much text as possible in no particular order.
+        # Often better for handwriting scattered across a page.
+        text = pytesseract.image_to_string(processed_image, config="--psm 11")
         return text.strip()
     except Exception as e:
         raise RuntimeError(f"Image OCR extraction failed: {str(e)}")
