@@ -1,9 +1,13 @@
+# backend/app/ai/ocr_engine.py
+
 import pytesseract
 from PIL import Image
 import io
 import fitz  # PyMuPDF
 import re
+from rapidfuzz import process, fuzz
 from app.utils.image_preprocess import preprocess_image
+from app.ai.parser import parse_dosage_and_timing
 
 # Set path to your Tesseract executable
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
@@ -15,13 +19,10 @@ def extract_text_from_pdf(pdf_bytes: bytes) -> str:
         doc = fitz.open(stream=pdf_bytes, filetype="pdf")
         for page_num in range(len(doc)):
             page = doc.load_page(page_num)
-            
-            # First try direct text extraction (if it's a searchable PDF)
             page_text = page.get_text()
             if page_text.strip():
                 text += page_text + "\n"
             else:
-                # If no text, render page as image and use OCR
                 pix = page.get_pixmap()
                 img = Image.open(io.BytesIO(pix.tobytes("png")))
                 processed_img = preprocess_image(img)
@@ -36,27 +37,46 @@ def extract_text_from_image(image_bytes: bytes) -> str:
     try:
         image = Image.open(io.BytesIO(image_bytes))
         processed_image = preprocess_image(image)
-        text = pytesseract.image_to_string(processed_image)
+        # Using preserve_interword_spaces for better parsing
+        text = pytesseract.image_to_string(processed_image, config="--psm 3")
         return text.strip()
     except Exception as e:
         raise RuntimeError(f"Image OCR extraction failed: {str(e)}")
 
 def detect_medicines(text: str, available_medicines: list) -> list:
     """
-    Match extracted text against a list of available medicines (brand names)
-    and return a list of detections with their generic names.
+    Match extracted text against a list of available medicines using fuzzy matching.
     """
     detected = []
-    text_lower = text.lower()
+    # Tokenize text into words / short phrases to check against DB
+    tokens = re.findall(r"\b\w{4,}\b", text) # Only check words with 4+ characters
     
-    for med in available_medicines:
-        # Simple word boundary matching for brand names
-        brand_pattern = rf"\b{re.escape(med['brand_name'].lower())}\b"
-        if re.search(brand_pattern, text_lower):
-            detected.append({
-                "brand": med["brand_name"],
-                "generic": med["generic_name"],
-                "dosage": med.get("dosage", "N/A")
-            })
+    brand_names = [med["brand_name"] for med in available_medicines]
+    
+    seen_brands = set()
+
+    for token in tokens:
+        # Fuzzy match each token against the entire brand database
+        match = process.extractOne(token, brand_names, scorer=fuzz.WRatio)
+        
+        if match and match[1] > 80: # Confidence threshold
+            matched_brand = match[0]
+            if matched_brand not in seen_brands:
+                seen_brands.add(matched_brand)
+                
+                # Find the full medicine object
+                med_obj = next(m for m in available_medicines if m["brand_name"] == matched_brand)
+                
+                # Parse dosage and timing from the full context
+                instructions = parse_dosage_and_timing(text, matched_brand)
+                
+                detected.append({
+                    "brand": med_obj["brand_name"],
+                    "generic": med_obj["generic_name"],
+                    "dosage": med_obj.get("dosage", "N/A"),
+                    "frequency": instructions["frequency"],
+                    "timing": instructions["timing"],
+                    "duration": instructions["duration"]
+                })
             
     return detected

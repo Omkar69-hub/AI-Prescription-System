@@ -194,29 +194,51 @@ export default function UploadPrescription() {
                     </p>
                   </div>
 
-                  {/* Medications List */}
+                  {/* Medications Table */}
                   <div>
-                    <h4 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
-                      <Pill size={18} className="text-emerald-500" /> Verified Medications
+                    <h4 className="text-sm font-bold text-slate-800 mb-6 flex items-center gap-2">
+                      <Pill size={18} className="text-emerald-500" /> Extracted Medication Details
                     </h4>
 
-                    <div className="space-y-3">
-                      {result.medicines?.length > 0 ? (
-                        result.medicines.map((med, index) => (
-                          <div key={index} className="flex items-center justify-between p-4 bg-slate-50 border border-slate-100 rounded-2xl group transition-all hover:border-emerald-200">
-                            <div>
-                              <p className="text-sm font-bold text-slate-800">{med.brand}</p>
-                              <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-tight">{med.dosage || "Standard Dose"}</p>
-                            </div>
-                            <div className="flex flex-col items-end">
-                              <span className="text-[8px] font-black text-emerald-500 uppercase tracking-tighter mb-1 border border-emerald-200/50 px-1 rounded">Generic SUGGESTION</span>
-                              <p className="text-sm font-bold text-emerald-600">{med.generic}</p>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="text-center text-slate-400 py-6 text-sm italic border border-dashed border-slate-100 rounded-2xl">No medicine matches found in our database.</p>
-                      )}
+                    <div className="overflow-x-auto -mx-4 lg:mx-0">
+                      <table className="w-full text-left border-separate border-spacing-y-3">
+                        <thead>
+                          <tr className="text-slate-400 text-[10px] font-black uppercase tracking-widest leading-none">
+                            <th className="px-4 pb-2">Medicine / Brand</th>
+                            <th className="px-4 pb-2">Genetic / Generic</th>
+                            <th className="px-4 pb-2">Frequency & Timing</th>
+                            <th className="px-4 pb-2">Duration</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {result.medicines?.length > 0 ? (
+                            result.medicines.map((med, index) => (
+                              <tr key={index} className="group">
+                                <td className="px-4 py-4 bg-slate-50/80 rounded-l-2xl border-y border-l border-slate-100 group-hover:bg-indigo-50/30 group-hover:border-indigo-100 transition-colors">
+                                  <div className="font-bold text-slate-900 text-sm">{med.brand}</div>
+                                  <div className="text-[10px] text-slate-400 mt-0.5">{med.dosage || "N/A"}</div>
+                                </td>
+                                <td className="px-4 py-4 bg-slate-50/80 border-y border-slate-100 group-hover:bg-indigo-50/30 group-hover:border-indigo-100 transition-colors">
+                                  <div className="font-bold text-emerald-600 text-sm">{med.generic}</div>
+                                </td>
+                                <td className="px-4 py-4 bg-slate-50/80 border-y border-slate-100 group-hover:bg-indigo-50/30 group-hover:border-indigo-100 transition-colors">
+                                  <div className="font-bold text-slate-700 text-[11px]">{med.frequency}</div>
+                                  <div className="text-[10px] text-slate-400 font-medium mt-0.5 italic">{med.timing}</div>
+                                </td>
+                                <td className="px-4 py-4 bg-slate-50/80 rounded-r-2xl border-y border-r border-slate-100 group-hover:bg-indigo-50/30 group-hover:border-indigo-100 transition-colors">
+                                  <div className="text-sm font-bold text-indigo-500">{med.duration}</div>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="4" className="text-center text-slate-400 py-10 text-sm italic border border-dashed border-slate-100 rounded-2xl">
+                                No medication matches could be extracted from this document.
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
 
