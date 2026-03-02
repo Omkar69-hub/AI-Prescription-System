@@ -67,11 +67,13 @@ class SignupRequest(BaseModel):
 @router.post("/signup", status_code=201)
 async def signup(
     user: SignupRequest,
+    background: BackgroundTasks,
     db: AsyncIOMotorDatabase = Depends(get_database),
 ):
     """
     Register a new account (patient / doctor / admin).
-    Returns the user_id of the newly created record.
+    Returns a JWT access token so the frontend can auto-login
+    immediately after registration — no second login step needed.
     """
     existing = await db["users"].find_one(_email_query(user.email))
     if existing:
@@ -83,19 +85,48 @@ async def signup(
             ),
         )
 
+    normalized_email = user.email.strip().lower()
+    full_name        = (user.full_name or "").strip()
+    phone            = (user.phone or "").strip()
+
     user_doc = {
-        "email":           user.email.strip().lower(),
-        "full_name":       (user.full_name or "").strip(),
-        "phone":           (user.phone or "").strip(),
+        "email":           normalized_email,
+        "full_name":       full_name,
+        "phone":           phone,
         "role":            user.role,
         "hashed_password": get_password_hash(user.password),
     }
     result = await db["users"].insert_one(user_doc)
+    user_id = str(result.inserted_id)
+
+    # ── Issue JWT so frontend can auto-login without a second round-trip ─
+    token_data   = {"user_id": user_id, "role": user.role, "email": normalized_email}
+    access_token = create_access_token(token_data)
+
+    # ── Fire-and-forget welcome notification ─────────────────────────────
+    background.add_task(
+        send_login_notification,
+        email=normalized_email,
+        phone=phone,
+        full_name=full_name or normalized_email,
+        role=user.role,
+        db=db,
+    )
+
     return {
-        "message":  "Account created successfully.",
-        "user_id":  str(result.inserted_id),
-        "role":     user.role,
-        "redirect": ROLE_REDIRECT.get(user.role, "/user/symptom-search"),
+        "message":      "Account created successfully.",
+        "user_id":      user_id,
+        "role":         user.role,
+        "redirect":     ROLE_REDIRECT.get(user.role, "/user/symptom-search"),
+        "access_token": access_token,
+        "token_type":   "bearer",
+        "user": {
+            "id":        user_id,
+            "email":     normalized_email,
+            "full_name": full_name,
+            "phone":     phone,
+            "role":      user.role,
+        },
     }
 
 

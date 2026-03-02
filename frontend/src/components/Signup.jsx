@@ -2,7 +2,7 @@
 import { useNavigate, Link } from "react-router-dom";
 import {
   Stethoscope, Mail, Lock, AlertCircle, ArrowRight,
-  ShieldCheck, Loader2, User, Users, Phone, Eye, EyeOff
+  ShieldCheck, Loader2, User, Users, Phone, Eye, EyeOff, CheckCircle2
 } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { signupUser } from "../services/api";
@@ -45,6 +45,7 @@ export default function Signup() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoad] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [phoneTouched, setPhoneTouched] = useState(false);
 
@@ -103,6 +104,7 @@ export default function Signup() {
   const handleSignup = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
 
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match. Please verify them.");
@@ -116,16 +118,39 @@ export default function Signup() {
     setLoading(true);
     try {
       localStorage.removeItem("auth");
-      await signupUser({
+      const data = await signupUser({
         email: formData.email,
         password: formData.password,
         full_name: formData.full_name,
         phone: formData.phone,
         role: formData.role,
       });
-      navigate("/login", { state: { message: "Account created successfully! Please sign in." } });
+
+      // Auto-login: store token from signup response
+      if (data.access_token) {
+        localStorage.setItem("auth", JSON.stringify({
+          token: data.access_token,
+          role: data.role,
+          user: data.user,
+        }));
+        setSuccess("Account created successfully! Redirecting you now…");
+        const redirectPath =
+          data.redirect ||
+          (data.role === "admin" ? "/admin/dashboard" :
+            data.role === "doctor" ? "/doctor/history" :
+              "/user/symptom-search");
+        setTimeout(() => navigate(redirectPath), 1500);
+      } else {
+        // Fallback: go to login page if token not returned
+        navigate("/login", { state: { message: "Account created successfully! Please sign in." } });
+      }
     } catch (err) {
-      setError(err.response?.data?.detail || "Signup failed. This email might already be registered.");
+      const detail = err.response?.data?.detail || "";
+      if (detail.toLowerCase().includes("already exists")) {
+        setError("This email is already registered. Please log in instead.");
+      } else {
+        setError(detail || "Signup failed. Please check your details and try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -151,6 +176,13 @@ export default function Signup() {
               Get started with your intelligent health management system
             </p>
           </div>
+
+          {success && (
+            <div className="mb-6 p-4 bg-emerald-50 border border-emerald-100 text-emerald-700 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+              <CheckCircle2 size={20} className="shrink-0 mt-0.5" />
+              <p className="text-sm font-medium">{success}</p>
+            </div>
+          )}
 
           {error && (
             <div className="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl flex items-start gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
@@ -265,8 +297,12 @@ export default function Signup() {
             </div>
 
             {/* Submit */}
-            <button type="submit" disabled={loading} className="w-full btn-primary flex items-center justify-center gap-2 py-4">
-              {loading ? <Loader2 className="animate-spin" size={20} /> : <><ArrowRight size={20} /> Create Account</>}
+            <button type="submit" disabled={loading || !!success} className="w-full btn-primary flex items-center justify-center gap-2 py-4">
+              {loading
+                ? <Loader2 className="animate-spin" size={20} />
+                : success
+                  ? <><CheckCircle2 size={20} /> Redirecting…</>
+                  : <><ArrowRight size={20} /> Create Account</>}
             </button>
           </form>
 

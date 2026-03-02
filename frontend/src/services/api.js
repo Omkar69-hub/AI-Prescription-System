@@ -21,9 +21,13 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response) {
-      console.error("API Error:", error.response.data?.detail || error.message);
+      // Server responded with an error code
+      console.error("API Error:", error.response.status, error.response.data?.detail || error.message);
+    } else if (error.request) {
+      // Request made but no response — server likely down
+      console.error("Network Error: No response from server. Is the backend running on port 8000?");
     } else {
-      console.error("Network Error:", error.message);
+      console.error("Request Error:", error.message);
     }
     return Promise.reject(error);
   }

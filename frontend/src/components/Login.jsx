@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import {
   Stethoscope, Mail, Lock, AlertCircle, ArrowRight,
-  ShieldCheck, Loader2, CheckCircle2, Eye, EyeOff,
-  Bell, Users, ChevronDown
+  ShieldCheck, Loader2, CheckCircle2, Eye, EyeOff, Bell
 } from "lucide-react";
 import { useGoogleLogin } from "@react-oauth/google";
 import { loginUser } from "../services/api";
@@ -70,7 +69,6 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("patient");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoad] = useState(false);
@@ -104,14 +102,17 @@ export default function Login() {
     setError(""); setSuccessMsg(""); setLoading(true);
     try {
       localStorage.removeItem("auth");
-      const data = await loginUser({ email, password, role });
+      // Only send email + password — role is determined by the server from the DB
+      const data = await loginUser({ email: email.trim(), password });
       onAuthSuccess(data);
     } catch (err) {
-      setError(
-        err.response?.data?.detail ||
-        err.response?.data?.message ||
-        "Login failed. Please check your credentials and try again."
-      );
+      const detail = err.response?.data?.detail || "";
+      // Network / CORS failure
+      if (!err.response) {
+        setError("Cannot reach the server. Please make sure the backend is running on port 8000.");
+      } else {
+        setError(detail || "Login failed. Please check your credentials and try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -125,7 +126,6 @@ export default function Login() {
         localStorage.removeItem("auth");
         const res = await api.post("/auth/google", {
           access_token: tokenResponse.access_token,
-          role,
         });
         onAuthSuccess(res.data);
       } catch (err) {
@@ -235,28 +235,6 @@ export default function Login() {
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
-                </div>
-              </div>
-
-              {/* Account Type */}
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2 ml-1">Account Type</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                    <Users size={18} />
-                  </div>
-                  <select
-                    className="input-field pl-11 pr-10 appearance-none"
-                    value={role}
-                    onChange={(e) => setRole(e.target.value)}
-                  >
-                    <option value="patient">Patient</option>
-                    <option value="doctor">Doctor</option>
-                    <option value="admin">Admin</option>
-                  </select>
-                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">
-                    <ChevronDown size={16} />
-                  </div>
                 </div>
               </div>
 
