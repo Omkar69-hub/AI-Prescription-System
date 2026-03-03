@@ -1,43 +1,63 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Activity,
-  Search,
-  AlertCircle,
-  Pill,
-  CheckCircle2,
-  ArrowRight,
-  TrendingDown,
-  Info,
-  Loader2
+  Activity, Search, AlertCircle, CheckCircle2,
+  ArrowRight, Info, Loader2
 } from "lucide-react";
 import { getSymptomRecommendation } from "../services/api";
 import Layout from "./Layout";
+import { addNotification, addDosageReminder, getCurrentDosageSlot } from "../utils/notifications";
+
+const cardStyle = {
+  background: "rgba(255,255,255,0.93)",
+  backdropFilter: "blur(16px)",
+  WebkitBackdropFilter: "blur(16px)",
+  borderRadius: 24,
+  border: "1px solid rgba(255,255,255,0.6)",
+  boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
+  padding: "32px",
+  position: "relative",
+  overflow: "hidden",
+};
 
 export default function SymptomSearch() {
   const navigate = useNavigate();
   const [symptoms, setSymptoms] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [result, setResult] = useState(null);
 
   const handleSearch = async () => {
     if (!symptoms.trim()) {
       setError("Please describe your symptoms to receive an analysis.");
       return;
     }
-
     setLoading(true);
     setError("");
-    setResult(null);
-
     try {
       const data = await getSymptomRecommendation(symptoms);
-      // Navigate to the results page with data
+      // Fire notifications before navigating
+      addNotification({
+        type: "prescription",
+        title: "📋 Analysis Complete",
+        message: `Diagnosed: ${data.condition}. ${data.medicines?.length || 0} medicine(s) recommended. Check your results below.`,
+      });
+      addDosageReminder(data.medicines || []);
+      addNotification({
+        type: "purchase",
+        title: "🛒 Purchase Reminder",
+        message: "Don't forget to purchase your prescribed medicines. Click \"Buy on 1mg\" or \"PharmEasy\" buttons on the results page.",
+      });
       navigate("/user/recommendation", { state: data });
     } catch (err) {
       console.error(err);
-      setError(err.response?.data?.detail || "Our AI is currently unable to process your request. Please try again or consult a doctor.");
+      if (!err.response) {
+        setError("Cannot connect to the server. Please make sure the backend is running on port 8000.");
+      } else {
+        setError(
+          err.response?.data?.detail ||
+          "Our AI could not process your request. Please try again or rephrase your symptoms."
+        );
+      }
     } finally {
       setLoading(false);
     }
@@ -45,133 +65,101 @@ export default function SymptomSearch() {
 
   return (
     <Layout>
-      <div className="max-w-5xl mx-auto">
-        {/* Header Section */}
-        <div className="mb-10">
-          <h1 className="text-3xl font-bold text-slate-900 font-outfit mb-3 flex items-center gap-3">
-            <Activity className="text-emerald-500" /> AI Symptom Analysis
+      <div style={{ maxWidth: 860, margin: "0 auto" }}>
+
+        {/* Page header */}
+        <div style={{ marginBottom: 28 }}>
+          <h1 style={{
+            fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.8rem",
+            color: "#e0f2fe", margin: "0 0 8px 0",
+            display: "flex", alignItems: "center", gap: 10,
+          }}>
+            <Activity style={{ color: "#06b6d4" }} size={28} />
+            AI Symptom Analysis
           </h1>
-          <p className="text-slate-500 max-w-2xl leading-relaxed">
-            Describe how you're feeling in natural language. Our advanced AI will analyze your symptoms and provide preliminary care insights and medicine recommendations.
+          <p style={{
+            color: "rgba(186,230,253,0.65)", fontSize: "0.9rem",
+            margin: 0, maxWidth: 580, lineHeight: 1.65,
+          }}>
+            Describe how you're feeling in natural language. Our advanced AI will analyze your
+            symptoms and provide preliminary care insights and medicine recommendations.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          {/* Input Panel */}
-          <div className="lg:col-span-12">
-            <div className="glass-card p-8 rounded-3xl border border-white/40 shadow-xl overflow-hidden relative">
-              <div className="absolute top-0 right-0 p-8 opacity-5">
-                <Search size={120} />
-              </div>
+        {/* Input card */}
+        <div style={cardStyle}>
+          <div style={{ position: "absolute", top: 16, right: 16, opacity: 0.04 }}>
+            <Search size={100} />
+          </div>
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <label style={{
+              display: "flex", alignItems: "center", gap: 7,
+              fontSize: "0.78rem", fontWeight: 700, color: "#1e293b",
+              marginBottom: 14, textTransform: "uppercase", letterSpacing: "0.06em",
+            }}>
+              <Info size={15} style={{ color: "#10b981" }} />
+              How can we help you today?
+            </label>
 
-              <div className="relative z-10">
-                <label className="block text-sm font-bold text-slate-700 mb-4 ml-1 flex items-center gap-2">
-                  <Info size={16} className="text-emerald-500" /> How can we help you today?
-                </label>
-                <textarea
-                  className="w-full h-40 p-6 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all outline-none text-lg placeholder:text-slate-300 resize-none"
-                  placeholder="Example: I've been having a persistent dry cough and mild fever for the last two days, along with some body ache..."
-                  value={symptoms}
-                  onChange={(e) => {
-                    setSymptoms(e.target.value);
-                    if (error) setError("");
-                  }}
-                />
+            <textarea
+              style={{
+                width: "100%", height: 150, padding: "16px",
+                background: "#f8fafc", border: "1.5px solid #e2e8f0",
+                borderRadius: 14, fontSize: "1rem", color: "#1e293b",
+                fontFamily: "Inter,sans-serif", lineHeight: 1.65,
+                resize: "none", outline: "none", boxSizing: "border-box",
+                transition: "border-color 0.2s, box-shadow 0.2s",
+              }}
+              placeholder="Example: I've been having a persistent dry cough and mild fever for the last two days, along with some body ache…"
+              value={symptoms}
+              onChange={(e) => { setSymptoms(e.target.value); if (error) setError(""); }}
+              onFocus={e => { e.target.style.borderColor = "#06b6d4"; e.target.style.boxShadow = "0 0 0 3px rgba(6,182,212,0.12)"; }}
+              onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
+            />
 
-                <div className="mt-6 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-slate-400 text-sm">
-                    <CheckCircle2 size={16} /> Ready for analysis
-                  </div>
-                  <button
-                    onClick={handleSearch}
-                    disabled={loading || !symptoms.trim()}
-                    className="btn-primary flex items-center gap-2 px-8 py-4 disabled:opacity-50 disabled:hover:translate-y-0"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 className="animate-spin" size={20} />
-                        Analyzing...
-                      </>
-                    ) : (
-                      <>
-                        Analyze Symptoms <ArrowRight size={20} />
-                      </>
-                    )}
-                  </button>
-                </div>
+            <div style={{ marginTop: 16, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#94a3b8", fontSize: "0.8rem" }}>
+                <CheckCircle2 size={15} /> Ready for analysis
               </div>
+              <button
+                onClick={handleSearch}
+                disabled={loading || !symptoms.trim()}
+                style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  padding: "12px 28px", borderRadius: 12, border: "none",
+                  fontFamily: "Outfit,sans-serif", fontWeight: 700, fontSize: "0.9rem",
+                  cursor: loading || !symptoms.trim() ? "not-allowed" : "pointer",
+                  background: loading || !symptoms.trim()
+                    ? "#94a3b8"
+                    : "linear-gradient(135deg,#06b6d4,#0284c7)",
+                  color: "#fff",
+                  boxShadow: loading || !symptoms.trim() ? "none" : "0 4px 16px rgba(6,182,212,0.35)",
+                  transition: "all 0.2s",
+                  opacity: loading || !symptoms.trim() ? 0.6 : 1,
+                }}
+              >
+                {loading
+                  ? <><Loader2 className="animate-spin" size={18} /> Analyzing…</>
+                  : <>Analyze Symptoms <ArrowRight size={18} /></>
+                }
+              </button>
             </div>
           </div>
-
-          {/* Error Message */}
-          {error && (
-            <div className="lg:col-span-12 p-5 bg-red-50 border border-red-100 rounded-2xl flex items-center gap-4 text-red-600 animate-in fade-in slide-in-from-top-4 duration-500">
-              <AlertCircle size={24} />
-              <p className="font-semibold">{error}</p>
-            </div>
-          )}
-
-          {/* AI Result Section */}
-          {result && (
-            <div className="lg:col-span-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
-              <div className="glass-card rounded-3xl overflow-hidden border border-emerald-100 shadow-2xl">
-                <div className="bg-emerald-500 px-8 py-6 text-white">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 text-white/90">
-                      <CheckCircle2 size={24} />
-                      <span className="font-bold tracking-wide uppercase text-xs">Analysis Complete</span>
-                    </div>
-                  </div>
-                  <h2 className="text-3xl font-bold mt-2 font-outfit">
-                    {result.disease || "Predicted Health Condition"}
-                  </h2>
-                </div>
-
-                <div className="p-10 bg-white">
-                  <div className="mb-10">
-                    <div className="flex items-center gap-2 text-slate-800 font-bold mb-6 pb-2 border-b border-slate-100">
-                      <Pill className="text-emerald-500" size={24} />
-                      <h3>Recommended Care & Medications</h3>
-                    </div>
-
-                    {result.medicines?.length > 0 ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {result.medicines.map((med, index) => (
-                          <div key={index} className="p-5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between group hover:border-emerald-200 hover:bg-emerald-50/30 transition-all duration-300">
-                            <div>
-                              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Prescription</p>
-                              <p className="text-lg font-bold text-slate-800">{med.brand}</p>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-xs font-bold text-emerald-500 uppercase tracking-widest mb-1 leading-none shrink-0 inline-flex items-center gap-1 bg-emerald-100/50 px-2 py-1 rounded">
-                                <TrendingDown size={12} /> Generic Available
-                              </p>
-                              <p className="text-lg font-bold text-emerald-600">{med.generic}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="p-8 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                        <p className="text-slate-400 font-medium italic">No specific medications identified. Please consult a doctor for a deeper diagnosis.</p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 flex items-start gap-4">
-                    <Info className="text-indigo-500 shrink-0 mt-1" size={22} />
-                    <div>
-                      <p className="text-sm font-bold text-indigo-900 mb-1 tracking-tight">AI Diagnostic Note</p>
-                      <p className="text-sm text-indigo-700/80 leading-relaxed">
-                        This recommendation is based on a statistical analysis of common health patterns. Always prioritize an in-person examination by a licensed medical professional before starting any treatment plan.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
+
+        {/* Error banner */}
+        {error && (
+          <div style={{
+            marginTop: 14, display: "flex", alignItems: "flex-start", gap: 10,
+            padding: "13px 16px", borderRadius: 14,
+            background: "rgba(254,226,226,0.95)", border: "1px solid rgba(239,68,68,0.3)",
+            color: "#dc2626", fontSize: "0.875rem", fontWeight: 500,
+          }}>
+            <AlertCircle size={20} style={{ flexShrink: 0, marginTop: 1 }} />
+            <span>{error}</span>
+          </div>
+        )}
+
       </div>
     </Layout>
   );

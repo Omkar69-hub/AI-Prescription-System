@@ -6,6 +6,38 @@ import {
 } from "lucide-react";
 import Layout from "./Layout";
 
+const card = {
+  background: "rgba(255,255,255,0.93)",
+  backdropFilter: "blur(16px)",
+  WebkitBackdropFilter: "blur(16px)",
+  borderRadius: 24,
+  border: "1px solid rgba(255,255,255,0.55)",
+  boxShadow: "0 8px 32px rgba(0,0,0,0.16)",
+  padding: 32,
+};
+
+/* Pharmacy buy button */
+function BuyBtn({ href, label, color, hoverColor, shadow }) {
+  return (
+    <a
+      href={href} target="_blank" rel="noopener noreferrer"
+      style={{
+        display: "inline-flex", alignItems: "center", gap: 5,
+        background: color, color: "#fff",
+        padding: "6px 11px", borderRadius: 9,
+        fontWeight: 700, fontSize: "0.7rem",
+        textDecoration: "none", whiteSpace: "nowrap",
+        boxShadow: shadow, fontFamily: "Outfit,sans-serif",
+        transition: "background 0.18s",
+      }}
+      onMouseEnter={e => e.currentTarget.style.background = hoverColor}
+      onMouseLeave={e => e.currentTarget.style.background = color}
+    >
+      <ShoppingCart size={11} /> {label}
+    </a>
+  );
+}
+
 export default function Recommendation() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -14,13 +46,18 @@ export default function Recommendation() {
   if (!data) {
     return (
       <Layout>
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-6">
-          <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center text-amber-500 mb-6">
-            <AlertTriangle size={40} />
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh", textAlign: "center", padding: "0 24px" }}>
+          <div style={{ width: 76, height: 76, borderRadius: "50%", background: "rgba(245,158,11,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20, border: "1px solid rgba(245,158,11,0.3)" }}>
+            <AlertTriangle size={38} style={{ color: "#f59e0b" }} />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">No Data Available</h2>
-          <p className="text-slate-500 mb-8 max-w-md">Please perform a new symptom search to get an analysis.</p>
-          <button onClick={() => navigate("/user/symptom-search")} className="btn-primary px-8">
+          <h2 style={{ fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.6rem", color: "#e0f2fe", margin: "0 0 8px" }}>No Data Available</h2>
+          <p style={{ color: "rgba(186,230,253,0.55)", marginBottom: 28, maxWidth: 380, lineHeight: 1.6, fontFamily: "Inter,sans-serif" }}>Please perform a new symptom search to receive an AI-powered analysis.</p>
+          <button onClick={() => navigate("/user/symptom-search")} style={{
+            padding: "12px 28px", borderRadius: 12, border: "none",
+            background: "linear-gradient(135deg,#06b6d4,#0284c7)",
+            color: "#fff", fontWeight: 700, fontFamily: "Outfit,sans-serif",
+            cursor: "pointer", fontSize: "0.9rem", boxShadow: "0 4px 16px rgba(6,182,212,0.35)",
+          }}>
             Start New Search
           </button>
         </div>
@@ -30,78 +67,122 @@ export default function Recommendation() {
 
   return (
     <Layout>
-      <div className="max-w-5xl mx-auto mb-20 animate-in fade-in slide-in-from-bottom-4 duration-700">
+      <div style={{ maxWidth: 1060, margin: "0 auto 40px" }}>
+
         {/* Header */}
-        <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div style={{ marginBottom: 24, display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 12 }}>
           <div>
-            <button onClick={() => navigate(-1)} className="group flex items-center gap-2 text-slate-500 hover:text-emerald-600 font-semibold transition-colors mb-2">
-              <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" /> Back to Search
+            <button onClick={() => navigate(-1)} style={{
+              display: "flex", alignItems: "center", gap: 6, background: "none", border: "none",
+              color: "rgba(186,230,253,0.55)", fontWeight: 600, fontSize: "0.875rem",
+              cursor: "pointer", marginBottom: 6, padding: 0, fontFamily: "Inter,sans-serif",
+              transition: "color 0.17s",
+            }}
+              onMouseEnter={e => e.currentTarget.style.color = "#67e8f9"}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(186,230,253,0.55)"}
+            >
+              <ArrowLeft size={16} /> Back to Search
             </button>
-            <h1 className="text-3xl font-bold text-slate-900 font-outfit">AI Health Recommendation</h1>
+            <h1 style={{ fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.7rem", color: "#e0f2fe", margin: 0 }}>
+              AI Health Recommendation
+            </h1>
           </div>
-          <div className="bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2">
-            <Activity size={16} /> Analysis Completed
+          <div style={{
+            display: "flex", alignItems: "center", gap: 7,
+            background: "rgba(16,185,129,0.15)", border: "1px solid rgba(16,185,129,0.3)",
+            color: "#6ee7b7", padding: "7px 16px", borderRadius: 999,
+            fontSize: "0.8rem", fontWeight: 700, fontFamily: "Outfit,sans-serif",
+          }}>
+            <Activity size={15} /> Analysis Completed
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Main */}
-          <div className="lg:col-span-8 space-y-8">
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 330px", gap: 22, alignItems: "start" }}>
+
+          {/* Left */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+
             {/* Condition */}
-            <div className="glass-card p-8 rounded-3xl border border-white/40 shadow-xl">
-              <div className="flex items-center gap-3 text-emerald-600 font-bold mb-4 uppercase tracking-widest text-xs">
-                <ClipboardList size={20} /> Preliminary Diagnosis
+            <div style={card}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#10b981", fontWeight: 700, fontSize: "0.67rem", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>
+                <ClipboardList size={18} /> Preliminary Diagnosis
               </div>
-              <h2 className="text-4xl font-extrabold text-slate-900 mb-4 font-outfit">{data.condition}</h2>
-              <p className="text-slate-600 leading-relaxed text-lg">{data.description}</p>
+              <h2 style={{ fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "2rem", color: "#0f172a", margin: "0 0 12px" }}>
+                {data.condition}
+              </h2>
+              <p style={{ color: "#475569", lineHeight: 1.7, margin: 0, fontSize: "0.95rem", fontFamily: "Inter,sans-serif" }}>
+                {data.description}
+              </p>
             </div>
 
-            {/* Medicines Table */}
-            <div className="glass-card p-8 rounded-3xl border border-white/40 shadow-xl overflow-hidden">
-              <div className="flex items-center gap-3 text-indigo-600 font-bold mb-6 uppercase tracking-widest text-xs">
-                <Pill size={20} /> Medication Plan
+            {/* Medicines */}
+            <div style={card}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#6366f1", fontWeight: 700, fontSize: "0.67rem", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 18 }}>
+                <Pill size={18} /> Medication Plan
               </div>
 
-              <div className="overflow-x-auto -mx-2">
-                <table className="w-full text-left border-separate border-spacing-y-3">
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 10px" }}>
                   <thead>
-                    <tr className="text-slate-400 text-xs font-black uppercase tracking-widest">
-                      <th className="px-4 pb-2">Brand Medicine</th>
-                      <th className="px-4 pb-2">Generic / Cheaper Alt.</th>
-                      <th className="px-4 pb-2">Dosage & Timing</th>
-                      <th className="px-4 pb-2">Buy Online</th>
+                    <tr style={{ color: "#94a3b8", fontSize: "0.65rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.07em" }}>
+                      <th style={{ textAlign: "left", padding: "0 10px 4px" }}>Brand Name</th>
+                      <th style={{ textAlign: "left", padding: "0 10px 4px" }}>Generic / Cheaper</th>
+                      <th style={{ textAlign: "left", padding: "0 10px 4px" }}>Dosage &amp; Timing</th>
+                      <th style={{ textAlign: "left", padding: "0 10px 4px" }}>Buy Online</th>
                     </tr>
                   </thead>
                   <tbody>
                     {data.medicines?.map((med, i) => (
-                      <tr key={i} className="group">
-                        <td className="px-4 py-4 bg-slate-50/80 rounded-l-2xl border-y border-l border-slate-100 group-hover:bg-indigo-50/30 transition-colors">
-                          <div className="font-bold text-slate-900">{med.brand}</div>
-                          <div className="text-[10px] text-slate-400 mt-0.5 italic">Common Brand</div>
+                      <tr key={i}>
+                        {/* Brand */}
+                        <td style={{ padding: "13px 10px", borderRadius: "14px 0 0 14px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRight: "none" }}>
+                          <a
+                            href={med.brand_link || med.buy_link} target="_blank" rel="noopener noreferrer"
+                            title={`Search "${med.brand}" on 1mg`}
+                            style={{ fontWeight: 700, color: "#4f46e5", fontSize: "0.88rem", textDecoration: "none", fontFamily: "Inter,sans-serif" }}
+                            onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"}
+                            onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}
+                          >
+                            {med.brand}
+                          </a>
+                          <div style={{ fontSize: "0.67rem", color: "#94a3b8", marginTop: 2, fontFamily: "Inter,sans-serif" }}>Brand — click to search</div>
                         </td>
-                        <td className="px-4 py-4 bg-slate-50/80 border-y border-slate-100 group-hover:bg-indigo-50/30 transition-colors">
-                          <div className="font-bold text-emerald-600">{med.generic}</div>
-                          <div className="text-[10px] font-bold text-emerald-500 mt-0.5 uppercase">Save up to 60%</div>
-                        </td>
-                        <td className="px-4 py-4 bg-slate-50/80 border-y border-slate-100 group-hover:bg-indigo-50/30 transition-colors">
-                          <div className="flex items-center gap-2 text-slate-700 font-medium text-sm">
-                            <Clock size={14} className="text-indigo-400 shrink-0" /> {med.dosage}
+
+                        {/* Generic */}
+                        <td style={{ padding: "13px 10px", background: "#f8fafc", border: "1px solid #e2e8f0", borderLeft: "none", borderRight: "none" }}>
+                          <a
+                            href={med.buy_link} target="_blank" rel="noopener noreferrer"
+                            title={`Search "${med.generic}" on 1mg`}
+                            style={{ fontWeight: 700, color: "#10b981", fontSize: "0.88rem", textDecoration: "none", fontFamily: "Inter,sans-serif" }}
+                            onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"}
+                            onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}
+                          >
+                            {med.generic}
+                          </a>
+                          <div style={{ fontSize: "0.64rem", fontWeight: 700, color: "#10b981", marginTop: 2, textTransform: "uppercase", fontFamily: "Inter,sans-serif" }}>
+                            Save up to 60%
                           </div>
-                          <div className="text-xs text-slate-500 mt-1 font-semibold">{med.timing}</div>
                         </td>
-                        <td className="px-4 py-4 bg-slate-50/80 rounded-r-2xl border-y border-r border-slate-100 group-hover:bg-indigo-50/30 transition-colors">
-                          {med.buy_link ? (
-                            <a
-                              href={med.buy_link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 bg-indigo-600 text-white text-xs font-bold px-3 py-2 rounded-xl hover:bg-indigo-700 transition-colors"
-                            >
-                              <ShoppingCart size={12} /> Buy
-                            </a>
-                          ) : (
-                            <span className="text-slate-300 text-xs">—</span>
-                          )}
+
+                        {/* Dosage */}
+                        <td style={{ padding: "13px 10px", background: "#f8fafc", border: "1px solid #e2e8f0", borderLeft: "none", borderRight: "none" }}>
+                          <div style={{ display: "flex", alignItems: "flex-start", gap: 6, color: "#374151", fontSize: "0.84rem", fontWeight: 600, fontFamily: "Inter,sans-serif" }}>
+                            <Clock size={12} style={{ color: "#818cf8", flexShrink: 0, marginTop: 3 }} />
+                            {med.dosage}
+                          </div>
+                          <div style={{ fontSize: "0.71rem", color: "#64748b", marginTop: 4, fontFamily: "Inter,sans-serif", fontWeight: 500 }}>{med.timing}</div>
+                        </td>
+
+                        {/* Buy buttons */}
+                        <td style={{ padding: "13px 10px", borderRadius: "0 14px 14px 0", background: "#f8fafc", border: "1px solid #e2e8f0", borderLeft: "none" }}>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 5, alignItems: "flex-start" }}>
+                            {med.buy_link && (
+                              <BuyBtn href={med.buy_link} label="1mg" color="#4f46e5" hoverColor="#4338ca" shadow="0 2px 7px rgba(79,70,229,0.28)" />
+                            )}
+                            {med.pharmeasy_link && (
+                              <BuyBtn href={med.pharmeasy_link} label="PharmEasy" color="#f97316" hoverColor="#ea580c" shadow="0 2px 7px rgba(249,115,22,0.28)" />
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -109,49 +190,67 @@ export default function Recommendation() {
                 </table>
               </div>
 
-              <div className="mt-4 p-4 bg-indigo-50/50 rounded-2xl flex items-center gap-3 text-indigo-700 text-xs font-semibold border border-indigo-100">
-                <ExternalLink size={16} /> Always verify the generic molecule name with your pharmacist before purchase. Links open Netmeds search.
+              <div style={{
+                marginTop: 14, padding: "11px 14px", background: "#eef2ff",
+                borderRadius: 12, display: "flex", alignItems: "flex-start", gap: 8,
+                color: "#4f46e5", fontSize: "0.75rem", fontWeight: 600,
+                border: "1px solid #e0e7ff", fontFamily: "Inter,sans-serif", lineHeight: 1.55,
+              }}>
+                <ExternalLink size={14} style={{ flexShrink: 0, marginTop: 2 }} />
+                <span>
+                  Click the <strong>brand</strong> or <strong>generic</strong> name to search directly.
+                  If a medicine shows "Not for sale" on 1mg, try <strong style={{ color: "#f97316" }}>PharmEasy</strong> — it may be available there or require uploading a prescription.
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="lg:col-span-4 space-y-8">
-            {/* Diet */}
-            <div className="glass-card p-6 rounded-3xl border border-white/40 shadow-xl bg-gradient-to-br from-white to-amber-50/30">
-              <div className="flex items-center gap-2 text-amber-600 font-bold mb-4 uppercase tracking-widest text-[10px]">
-                <Utensils size={18} /> Suggested Diet
+          {/* Right sidebar */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+
+            <div style={{ ...card, padding: 24, background: "rgba(255,251,235,0.93)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 7, color: "#d97706", fontWeight: 700, fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
+                <Utensils size={16} /> Suggested Diet
               </div>
-              <p className="text-slate-700 text-sm leading-relaxed p-4 bg-white/60 rounded-2xl border border-amber-100/50 italic">
-                "{data.diet}"
+              <p style={{ color: "#78350f", fontSize: "0.875rem", lineHeight: 1.72, margin: 0, fontFamily: "Inter,sans-serif", fontWeight: 400 }}>
+                {data.diet}
               </p>
             </div>
 
-            {/* Workout */}
-            <div className="glass-card p-6 rounded-3xl border border-white/40 shadow-xl bg-gradient-to-br from-white to-blue-50/30">
-              <div className="flex items-center gap-2 text-blue-600 font-bold mb-4 uppercase tracking-widest text-[10px]">
-                <Dumbbell size={18} /> Lifestyle & Activity
+            <div style={{ ...card, padding: 24, background: "rgba(239,246,255,0.93)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 7, color: "#2563eb", fontWeight: 700, fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>
+                <Dumbbell size={16} /> Lifestyle &amp; Activity
               </div>
-              <p className="text-slate-700 text-sm leading-relaxed p-4 bg-white/60 rounded-2xl border border-blue-100/50 italic">
-                "{data.workout}"
+              <p style={{ color: "#1e3a8a", fontSize: "0.875rem", lineHeight: 1.72, margin: 0, fontFamily: "Inter,sans-serif", fontWeight: 400 }}>
+                {data.workout}
               </p>
             </div>
 
-            {/* Disclaimer */}
-            <div className="p-6 rounded-3xl bg-red-50 border border-red-100">
-              <div className="flex items-center gap-2 text-red-600 font-bold mb-3">
-                <AlertTriangle size={18} />
-                <span className="text-xs uppercase tracking-tight">Disclaimer</span>
+            <div style={{ padding: 20, borderRadius: 18, background: "rgba(254,242,242,0.93)", border: "1px solid rgba(239,68,68,0.2)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 7, color: "#dc2626", fontWeight: 700, fontSize: "0.65rem", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: 8 }}>
+                <AlertTriangle size={16} /> Disclaimer
               </div>
-              <p className="text-xs text-red-700/70 leading-relaxed font-medium">
+              <p style={{ color: "rgba(153,27,27,0.8)", fontSize: "0.78rem", lineHeight: 1.65, margin: 0, fontWeight: 500, fontFamily: "Inter,sans-serif" }}>
                 This AI tool provides educational health insights, not medical diagnosis. If symptoms persist, seek immediate help from a certified medical professional.
               </p>
             </div>
 
-            <button onClick={() => navigate("/user/symptom-search")} className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-all">
+            <button onClick={() => navigate("/user/symptom-search")} style={{
+              width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              padding: "13px 0", borderRadius: 14,
+              background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)",
+              color: "#e0f2fe", fontWeight: 700, fontSize: "0.875rem",
+              cursor: "pointer", fontFamily: "Outfit,sans-serif",
+              backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
+              transition: "all 0.18s",
+            }}
+              onMouseEnter={e => { e.currentTarget.style.background = "rgba(6,182,212,0.15)"; e.currentTarget.style.borderColor = "rgba(6,182,212,0.4)"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.1)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"; }}
+            >
               Start Another Analysis
             </button>
           </div>
+
         </div>
       </div>
     </Layout>

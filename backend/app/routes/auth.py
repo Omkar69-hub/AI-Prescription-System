@@ -1,9 +1,16 @@
 # backend/app/routes/auth.py
 """
-Authentication routes — Signup, Login (all roles), and a /me endpoint.
+Authentication routes — Signup and Login only.
+Google OAuth has been removed. Only registered users may access the system.
 
-On every successful login a non-blocking welcome notification is sent
-via the notifications service (email and/or SMS depending on .env config).
+Signup behaviour:
+  • Email duplicate  → HTTP 400 error (hard block)
+  • Name  duplicate  → account is still created; response includes a soft warning
+  • Password hashed with bcrypt via passlib
+
+Login behaviour:
+  • Accepts email + password only
+  • Returns JWT access-token + role-based redirect path
 """
 
 from __future__ import annotations
@@ -25,8 +32,12 @@ router = APIRouter()
 # Helpers
 # ─────────────────────────────────────────────────────────────────────────────
 def _email_query(email: str) -> dict:
-    """Case-insensitive email lookup (regex fallback, no collation required)."""
+    """Case-insensitive email lookup."""
     return {"email": {"$regex": f"^{re.escape(email.strip())}$", "$options": "i"}}
+
+def _name_query(name: str) -> dict:
+    """Case-insensitive full_name lookup."""
+    return {"full_name": {"$regex": f"^{re.escape(name.strip())}$", "$options": "i"}}
 
 
 ALLOWED_ROLES = {"patient", "doctor", "admin"}
@@ -71,24 +82,30 @@ async def signup(
     db: AsyncIOMotorDatabase = Depends(get_database),
 ):
     """
-    Register a new account (patient / doctor / admin).
-    Returns a JWT access token so the frontend can auto-login
-    immediately after registration — no second login step needed.
+    Register a new account.
+
+    Rules:
+      - Email already used      → 400 error (hard block)
+      - Name already used       → account created + soft warning in response
+      - Everything else         → account created silently, JWT returned
     """
-    existing = await db["users"].find_one(_email_query(user.email))
-    if existing:
+    # ── Hard block: duplicate email ───────────────────────────────────────
+    if await db["users"].find_one(_email_query(user.email)):
         raise HTTPException(
             status_code=400,
-            detail=(
-                "An account with this email already exists. "
-                "Please sign in or use a different email address."
-            ),
+            detail="An account with this email already exists. Please log in instead.",
         )
 
     normalized_email = user.email.strip().lower()
     full_name        = (user.full_name or "").strip()
     phone            = (user.phone or "").strip()
 
+    # ── Soft check: duplicate name (warn, but still create) ───────────────
+    name_already_taken = False
+    if full_name and await db["users"].find_one(_name_query(full_name)):
+        name_already_taken = True
+
+    # ── Create account ────────────────────────────────────────────────────
     user_doc = {
         "email":           normalized_email,
         "full_name":       full_name,
@@ -96,14 +113,14 @@ async def signup(
         "role":            user.role,
         "hashed_password": get_password_hash(user.password),
     }
-    result = await db["users"].insert_one(user_doc)
+    result  = await db["users"].insert_one(user_doc)
     user_id = str(result.inserted_id)
 
-    # ── Issue JWT so frontend can auto-login without a second round-trip ─
+    # ── Issue JWT for immediate auto-login ────────────────────────────────
     token_data   = {"user_id": user_id, "role": user.role, "email": normalized_email}
     access_token = create_access_token(token_data)
 
-    # ── Fire-and-forget welcome notification ─────────────────────────────
+    # ── Welcome notification (background) ─────────────────────────────────
     background.add_task(
         send_login_notification,
         email=normalized_email,
@@ -113,7 +130,7 @@ async def signup(
         db=db,
     )
 
-    return {
+    response = {
         "message":      "Account created successfully.",
         "user_id":      user_id,
         "role":         user.role,
@@ -129,6 +146,16 @@ async def signup(
         },
     }
 
+    # Attach soft warning if name was already in use
+    if name_already_taken:
+        response["name_warning"] = (
+            f"Note: Another user named \"{full_name}\" is already registered. "
+            "Your account has been created — please make sure you're not "
+            "accidentally duplicating an existing account."
+        )
+
+    return response
+
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Login
@@ -140,50 +167,36 @@ class LoginRequest(BaseModel):
 
 @router.post("/login")
 async def login(
-    login_data:  LoginRequest,
-    background:  BackgroundTasks,
+    login_data: LoginRequest,
+    background: BackgroundTasks,
     db: AsyncIOMotorDatabase = Depends(get_database),
 ):
     """
-    Authenticate any role (admin / doctor / patient) with email + password.
-
-    On success:
-      • Returns a JWT access token + user object + role-specific redirect path.
-      • Fires a background welcome notification (email and/or SMS).
-
-    On failure:
-      • Returns HTTP 401 with a safe, non-enumerable error message.
+    Authenticate with email + password.
+    Returns JWT access-token, user profile, and role-based redirect path.
     """
     email = login_data.email.strip()
 
-    # ── Lookup (case-insensitive) ─────────────────────────────────────────
-    user = await db["users"].find_one(_email_query(email))
-
-    # Uniform failure — prevents email enumeration
     _INVALID = HTTPException(
         status_code=401,
-        detail="Invalid email or password. Please check your credentials and try again.",
+        detail="Invalid email or password. Please check your credentials.",
     )
 
+    user = await db["users"].find_one(_email_query(email))
     if not user:
         raise _INVALID
 
     stored_hash = user.get("hashed_password", "")
     if not stored_hash or not stored_hash.startswith("$2"):
-        # Legacy / broken hash guard
         raise HTTPException(
             status_code=401,
-            detail=(
-                "This account cannot be authenticated — the stored password "
-                "is in an unsupported format. Please reset your account."
-            ),
+            detail="This account has a corrupted password. Please contact support.",
         )
 
     if not verify_password(login_data.password, stored_hash):
         raise _INVALID
 
-    # ── Build JWT ─────────────────────────────────────────────────────────
-    role = user.get("role", "patient")
+    role       = user.get("role", "patient")
     token_data = {
         "user_id": str(user["_id"]),
         "role":    role,
@@ -191,7 +204,6 @@ async def login(
     }
     access_token = create_access_token(token_data)
 
-    # ── Fire-and-forget welcome notification ──────────────────────────────
     background.add_task(
         send_login_notification,
         email=user.get("email"),
@@ -217,8 +229,6 @@ async def login(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# /me — current user info (used by frontend guards)
-# ─────────────────────────────────────────────────────────────────────────────
 # /me — current user info
 # ─────────────────────────────────────────────────────────────────────────────
 from app.core.security import get_current_user  # noqa: E402
@@ -230,8 +240,7 @@ async def get_me(
     db: AsyncIOMotorDatabase = Depends(get_database),
 ):
     """Return the authenticated user's profile."""
-    from bson import ObjectId  # noqa: PLC0415
-
+    from bson import ObjectId
     user = await db["users"].find_one({"_id": ObjectId(current_user["user_id"])})
     if not user:
         raise HTTPException(status_code=404, detail="User not found.")
@@ -242,105 +251,3 @@ async def get_me(
         "phone":     user.get("phone", ""),
         "role":      user.get("role", "patient"),
     }
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Google OAuth Login / Register
-# ─────────────────────────────────────────────────────────────────────────────
-class GoogleLoginRequest(BaseModel):
-    access_token: str                     # token from @react-oauth/google
-    role: Optional[str] = "patient"       # role selected on the form
-
-
-@router.post("/google")
-async def google_login(
-    payload:    GoogleLoginRequest,
-    background: BackgroundTasks,
-    db: AsyncIOMotorDatabase = Depends(get_database),
-):
-    """
-    Verify a Google access_token by calling Google's userinfo endpoint.
-    - If user exists  → log them in (return JWT).
-    - If user is new  → auto-create account, then log them in.
-    """
-    import urllib.request
-    import json as _json
-
-    # ── 1. Fetch user info from Google ────────────────────────────────────
-    try:
-        req = urllib.request.Request(
-            "https://www.googleapis.com/oauth2/v3/userinfo",
-            headers={"Authorization": f"Bearer {payload.access_token}"},
-        )
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            g_user = _json.loads(resp.read())
-    except Exception:
-        raise HTTPException(
-            status_code=401,
-            detail="Could not verify Google token. Please try again.",
-        )
-
-    g_email      = g_user.get("email", "").strip().lower()
-    g_name       = g_user.get("name", "") or g_user.get("given_name", "")
-    g_picture    = g_user.get("picture", "")
-    g_verified   = g_user.get("email_verified", False)
-
-    if not g_email:
-        raise HTTPException(status_code=400, detail="Google account has no email address.")
-    if not g_verified:
-        raise HTTPException(status_code=400, detail="Google email address is not verified.")
-
-    # ── 2. Find or create user ────────────────────────────────────────────
-    role  = (payload.role or "patient").lower().strip()
-    if role not in ALLOWED_ROLES:
-        role = "patient"
-
-    user = await db["users"].find_one(_email_query(g_email))
-
-    if not user:
-        # Auto-register
-        user_doc = {
-            "email":           g_email,
-            "full_name":       g_name,
-            "phone":           "",
-            "role":            role,
-            "hashed_password": "",          # no password for Google users
-            "avatar":          g_picture,
-            "auth_provider":   "google",
-        }
-        result = await db["users"].insert_one(user_doc)
-        user   = await db["users"].find_one({"_id": result.inserted_id})
-
-    # ── 3. Issue JWT ──────────────────────────────────────────────────────
-    user_role    = user.get("role", role)
-    token_data   = {
-        "user_id": str(user["_id"]),
-        "role":    user_role,
-        "email":   user.get("email", ""),
-    }
-    access_token = create_access_token(token_data)
-
-    # ── 4. Fire welcome SMS if phone exists ───────────────────────────────
-    background.add_task(
-        send_login_notification,
-        email=user.get("email"),
-        phone=user.get("phone"),
-        full_name=user.get("full_name", g_email),
-        role=user_role,
-        db=db,
-    )
-
-    return {
-        "access_token": access_token,
-        "token_type":   "bearer",
-        "role":         user_role,
-        "redirect":     ROLE_REDIRECT.get(user_role, "/user/symptom-search"),
-        "user": {
-            "id":        str(user["_id"]),
-            "email":     user.get("email", ""),
-            "full_name": user.get("full_name", ""),
-            "phone":     user.get("phone", ""),
-            "role":      user_role,
-        },
-    }
-
