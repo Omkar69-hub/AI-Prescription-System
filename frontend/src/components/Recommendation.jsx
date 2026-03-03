@@ -7,12 +7,10 @@ import {
 import Layout from "./Layout";
 
 const card = {
-  background: "rgba(255,255,255,0.93)",
-  backdropFilter: "blur(16px)",
-  WebkitBackdropFilter: "blur(16px)",
+  background: "#ffffff",
   borderRadius: 24,
-  border: "1px solid rgba(255,255,255,0.55)",
-  boxShadow: "0 8px 32px rgba(0,0,0,0.16)",
+  border: "1px solid #e2e8f0",
+  boxShadow: "0 8px 30px rgba(0,0,0,0.03)",
   padding: 32,
 };
 
@@ -50,13 +48,13 @@ export default function Recommendation() {
           <div style={{ width: 76, height: 76, borderRadius: "50%", background: "rgba(245,158,11,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20, border: "1px solid rgba(245,158,11,0.3)" }}>
             <AlertTriangle size={38} style={{ color: "#f59e0b" }} />
           </div>
-          <h2 style={{ fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.6rem", color: "#e0f2fe", margin: "0 0 8px" }}>No Data Available</h2>
-          <p style={{ color: "rgba(186,230,253,0.55)", marginBottom: 28, maxWidth: 380, lineHeight: 1.6, fontFamily: "Inter,sans-serif" }}>Please perform a new symptom search to receive an AI-powered analysis.</p>
+          <h2 style={{ fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.8rem", color: "#0f172a", margin: "0 0 8px" }}>No Data Available</h2>
+          <p style={{ color: "#64748b", marginBottom: 28, maxWidth: 380, lineHeight: 1.6, fontFamily: "Inter,sans-serif" }}>Please perform a new symptom search to receive an AI-powered analysis.</p>
           <button onClick={() => navigate("/user/symptom-search")} style={{
             padding: "12px 28px", borderRadius: 12, border: "none",
-            background: "linear-gradient(135deg,#06b6d4,#0284c7)",
+            background: "#10b981",
             color: "#fff", fontWeight: 700, fontFamily: "Outfit,sans-serif",
-            cursor: "pointer", fontSize: "0.9rem", boxShadow: "0 4px 16px rgba(6,182,212,0.35)",
+            cursor: "pointer", fontSize: "0.9rem", boxShadow: "0 4px 16px rgba(16,185,129,0.25)",
           }}>
             Start New Search
           </button>
@@ -74,24 +72,24 @@ export default function Recommendation() {
           <div>
             <button onClick={() => navigate(-1)} style={{
               display: "flex", alignItems: "center", gap: 6, background: "none", border: "none",
-              color: "rgba(186,230,253,0.55)", fontWeight: 600, fontSize: "0.875rem",
+              color: "#94a3b8", fontWeight: 600, fontSize: "0.875rem",
               cursor: "pointer", marginBottom: 6, padding: 0, fontFamily: "Inter,sans-serif",
-              transition: "color 0.17s",
+              transition: "all 0.2s",
             }}
-              onMouseEnter={e => e.currentTarget.style.color = "#67e8f9"}
-              onMouseLeave={e => e.currentTarget.style.color = "rgba(186,230,253,0.55)"}
+              onMouseEnter={e => e.currentTarget.style.color = "#10b981"}
+              onMouseLeave={e => e.currentTarget.style.color = "#94a3b8"}
             >
               <ArrowLeft size={16} /> Back to Search
             </button>
-            <h1 style={{ fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.7rem", color: "#e0f2fe", margin: 0 }}>
+            <h1 style={{ fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.8rem", color: "#0f172a", margin: 0 }}>
               AI Health Recommendation
             </h1>
           </div>
           <div style={{
             display: "flex", alignItems: "center", gap: 7,
-            background: "rgba(16,185,129,0.15)", border: "1px solid rgba(16,185,129,0.3)",
-            color: "#6ee7b7", padding: "7px 16px", borderRadius: 999,
-            fontSize: "0.8rem", fontWeight: 700, fontFamily: "Outfit,sans-serif",
+            background: "#f0fdf4", border: "1px solid #dcfce7",
+            color: "#10b981", padding: "7px 16px", borderRadius: 999,
+            fontSize: "0.85rem", fontWeight: 700, fontFamily: "Outfit,sans-serif",
           }}>
             <Activity size={15} /> Analysis Completed
           </div>
@@ -238,14 +236,14 @@ export default function Recommendation() {
             <button onClick={() => navigate("/user/symptom-search")} style={{
               width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
               padding: "13px 0", borderRadius: 14,
-              background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)",
-              color: "#e0f2fe", fontWeight: 700, fontSize: "0.875rem",
+              background: "#ffffff", border: "1px solid #e2e8f0",
+              color: "#475569", fontWeight: 700, fontSize: "0.875rem",
               cursor: "pointer", fontFamily: "Outfit,sans-serif",
-              backdropFilter: "blur(8px)", WebkitBackdropFilter: "blur(8px)",
-              transition: "all 0.18s",
+              boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
+              transition: "all 0.2s",
             }}
-              onMouseEnter={e => { e.currentTarget.style.background = "rgba(6,182,212,0.15)"; e.currentTarget.style.borderColor = "rgba(6,182,212,0.4)"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.1)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.2)"; }}
+              onMouseEnter={e => { e.currentTarget.style.background = "#f8fafc"; e.currentTarget.style.borderColor = "#cbd5e1"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "#ffffff"; e.currentTarget.style.borderColor = "#e2e8f0"; }}
             >
               Start Another Analysis
             </button>

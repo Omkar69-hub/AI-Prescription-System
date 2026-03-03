@@ -33,14 +33,14 @@ export default function History() {
         <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <h1 className="text-3xl font-bold text-slate-900 font-outfit mb-3 flex items-center gap-3">
-              <HistoryIcon className="text-indigo-500" /> My Search History
+              <HistoryIcon className="text-emerald-500" /> My Search History
             </h1>
             <p className="text-slate-500 max-w-xl leading-relaxed">
               Review your past AI symptom analyses and medicine recommendations.
             </p>
           </div>
           <div className="flex items-center gap-4 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm">
-            <div className="px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl font-bold text-xs uppercase tracking-widest">
+            <div className="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl font-bold text-xs uppercase tracking-widest">
               {history.length} Records
             </div>
           </div>
@@ -70,7 +70,7 @@ export default function History() {
         ) : (
           <div className="grid grid-cols-1 gap-4">
             {history.map((item, index) => (
-              <div key={index} className="glass-card p-6 rounded-3xl border border-white/50 shadow-xl flex items-start gap-6 group hover:border-emerald-200 transition-all duration-300">
+              <div key={index} className="glass-card p-6 rounded-[32px] border border-slate-100 shadow-xl flex items-start gap-6 group hover:border-emerald-200 transition-all duration-300">
                 <div className="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shrink-0 mt-1">
                   <Activity size={22} />
                 </div>
@@ -96,7 +96,7 @@ export default function History() {
                   {item.medicines?.length > 0 && (
                     <div className="mt-3 flex flex-wrap gap-2">
                       {item.medicines.map((m, mi) => (
-                        <span key={mi} className="inline-flex items-center gap-1 text-[11px] bg-indigo-50 text-indigo-700 border border-indigo-100 px-2 py-1 rounded-lg font-semibold">
+                        <span key={mi} className="inline-flex items-center gap-1 text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-100 px-2 py-1 rounded-lg font-semibold">
                           <Pill size={10} /> {m.brand || m.generic}
                         </span>
                       ))}

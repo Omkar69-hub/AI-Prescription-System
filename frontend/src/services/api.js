@@ -93,6 +93,11 @@ export const getMe = async () => {
   return res.data;
 };
 
+export const updateMe = async (data) => {
+  const res = await api.patch("/auth/me", data);
+  return res.data;
+};
+
 // ─────────────────────────────
 // Notification log (admin use)
 // ─────────────────────────────

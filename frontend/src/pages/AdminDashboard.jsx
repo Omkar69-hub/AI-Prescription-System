@@ -79,8 +79,8 @@ export default function AdminDashboard() {
         {toast && (
           <div
             className={`fixed top-6 right-6 z-50 flex items-start gap-3 p-4 rounded-2xl shadow-xl border animate-in slide-in-from-top-4 duration-300 max-w-sm ${toast.type === "success"
-                ? "bg-emerald-50 border-emerald-100 text-emerald-800"
-                : "bg-red-50 border-red-100 text-red-700"
+              ? "bg-emerald-50 border-emerald-100 text-emerald-800"
+              : "bg-red-50 border-red-100 text-red-700"
               }`}
           >
             {toast.type === "success" ? (
@@ -108,7 +108,7 @@ export default function AdminDashboard() {
             </div>
             <button
               onClick={fetchMedicines}
-              className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-100 transition-colors"
+              className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors"
             >
               <RefreshCcw size={20} className={fetching ? "animate-spin" : ""} />
             </button>
@@ -118,9 +118,9 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Add Form */}
           <div className="lg:col-span-4">
-            <div className="glass-card p-8 rounded-3xl border border-white/50 shadow-xl sticky top-28">
+            <div className="glass-card p-8 rounded-[32px] border border-slate-100 shadow-xl sticky top-28">
               <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-                <Plus size={20} className="text-indigo-500" /> Add New Mapping
+                <Plus size={20} className="text-emerald-500" /> Add New Mapping
               </h3>
 
               <form onSubmit={handleAdd} className="space-y-4">
@@ -185,7 +185,7 @@ export default function AdminDashboard() {
 
           {/* Table */}
           <div className="lg:col-span-8">
-            <div className="glass-card rounded-3xl border border-white/50 shadow-xl overflow-hidden">
+            <div className="glass-card rounded-[32px] border border-slate-100 shadow-xl overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse">
                   <thead>
@@ -200,7 +200,7 @@ export default function AdminDashboard() {
                     {fetching ? (
                       <tr>
                         <td colSpan="4" className="px-8 py-20 text-center">
-                          <Loader2 className="animate-spin inline-block text-indigo-500 mb-2" size={32} />
+                          <Loader2 className="animate-spin inline-block text-emerald-500 mb-2" size={32} />
                           <p className="text-slate-400 font-medium">Synchronizing records...</p>
                         </td>
                       </tr>

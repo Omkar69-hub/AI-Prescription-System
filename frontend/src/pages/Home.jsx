@@ -30,7 +30,7 @@ function Particles() {
       {pts.map((p) => (
         <div
           key={p.id}
-          className="absolute rounded-full bg-cyan-400"
+          className="absolute rounded-full bg-emerald-400"
           style={{
             width: p.size,
             height: p.size,
@@ -50,23 +50,23 @@ function FeatureCard({ icon, title, description, accent }) {
   return (
     <div
       style={{
-        background: "rgba(255,255,255,0.06)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        border: "1px solid rgba(255,255,255,0.12)",
-        borderRadius: 20,
-        padding: "32px 28px",
+        background: "rgba(255,255,255,0.8)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        border: "1px solid #e2e8f0",
+        borderRadius: 24,
+        padding: "36px 30px",
         transition: "transform 0.3s, border-color 0.3s, box-shadow 0.3s",
         cursor: "default",
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.transform = "translateY(-6px)";
-        e.currentTarget.style.borderColor = `${accent}55`;
-        e.currentTarget.style.boxShadow = `0 20px 48px rgba(0,0,0,0.3), 0 0 0 1px ${accent}22 inset`;
+        e.currentTarget.style.transform = "translateY(-8px)";
+        e.currentTarget.style.borderColor = `${accent}`;
+        e.currentTarget.style.boxShadow = `0 20px 40px rgba(0,0,0,0.06)`;
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.transform = "translateY(0)";
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+        e.currentTarget.style.borderColor = "#e2e8f0";
         e.currentTarget.style.boxShadow = "none";
       }}
     >
@@ -88,9 +88,9 @@ function FeatureCard({ icon, title, description, accent }) {
       <h3
         style={{
           fontFamily: "Outfit, sans-serif",
-          fontWeight: 700,
-          fontSize: "1.1rem",
-          color: "#e0f2fe",
+          fontWeight: 800,
+          fontSize: "1.2rem",
+          color: "#0f172a",
           margin: "0 0 10px 0",
         }}
       >
@@ -98,10 +98,10 @@ function FeatureCard({ icon, title, description, accent }) {
       </h3>
       <p
         style={{
-          color: "rgba(186,230,253,0.6)",
-          fontSize: "0.875rem",
+          color: "#64748b",
+          fontSize: "0.95rem",
           margin: 0,
-          lineHeight: 1.7,
+          lineHeight: 1.6,
         }}
       >
         {description}
@@ -119,14 +119,14 @@ function StatBadge({ value, label }) {
           fontFamily: "Outfit, sans-serif",
           fontWeight: 800,
           fontSize: "1.9rem",
-          color: "#67e8f9",
+          color: "#10b981",
           lineHeight: 1,
           marginBottom: 4,
         }}
       >
         {value}
       </div>
-      <div style={{ color: "rgba(186,230,253,0.55)", fontSize: "0.78rem" }}>
+      <div style={{ color: "#64748b", fontSize: "0.85rem", fontWeight: 600 }}>
         {label}
       </div>
     </div>
@@ -161,11 +161,11 @@ export default function Home() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "20px 40px",
-          borderBottom: "1px solid rgba(255,255,255,0.07)",
-          backdropFilter: "blur(10px)",
-          WebkitBackdropFilter: "blur(10px)",
-          background: "rgba(4,18,38,0.3)",
+          padding: "20px 48px",
+          borderBottom: "1px solid #e2e8f0",
+          background: "rgba(255,255,255,0.8)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
         }}
       >
         {/* Logo */}
@@ -185,27 +185,27 @@ export default function Home() {
           <button
             onClick={() => navigate("/login")}
             style={{
-              background: "rgba(255,255,255,0.07)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              borderRadius: 10,
-              color: "rgba(186,230,253,0.85)",
-              padding: "9px 20px",
-              fontSize: "0.875rem",
+              background: "transparent",
+              border: "1px solid transparent",
+              borderRadius: 12,
+              color: "#475569",
+              padding: "10px 24px",
+              fontSize: "0.95rem",
               fontWeight: 600,
               cursor: "pointer",
               transition: "background 0.2s, border-color 0.2s",
               fontFamily: "Inter, sans-serif",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(6,182,212,0.12)";
-              e.currentTarget.style.borderColor = "rgba(6,182,212,0.4)";
+              e.currentTarget.style.background = "#f1f5f9";
+              e.currentTarget.style.color = "#0f172a";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = "rgba(255,255,255,0.07)";
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.12)";
+              e.currentTarget.style.background = "transparent";
+              e.currentTarget.style.color = "#475569";
             }}
           >
-            Sign In
+            Login
           </button>
           <button
             onClick={() => navigate("/signup")}
@@ -213,27 +213,27 @@ export default function Home() {
               display: "flex",
               alignItems: "center",
               gap: 7,
-              background: "linear-gradient(135deg, #06b6d4 0%, #0284c7 60%, #0e7490 100%)",
+              background: "#10b981",
               border: "none",
-              borderRadius: 10,
+              borderRadius: 12,
               color: "#fff",
-              padding: "9px 20px",
-              fontSize: "0.875rem",
-              fontWeight: 700,
+              padding: "10px 26px",
+              fontSize: "0.95rem",
+              fontWeight: 800,
               cursor: "pointer",
-              transition: "opacity 0.2s, transform 0.18s, box-shadow 0.2s",
-              boxShadow: "0 4px 16px rgba(6,182,212,0.35)",
+              transition: "all 0.2s",
+              boxShadow: "0 4px 12px rgba(16, 185, 129, 0.2)",
               fontFamily: "Outfit, sans-serif",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.opacity = "0.92";
+              e.currentTarget.style.background = "#059669";
               e.currentTarget.style.transform = "translateY(-1px)";
-              e.currentTarget.style.boxShadow = "0 6px 24px rgba(6,182,212,0.5)";
+              e.currentTarget.style.boxShadow = "0 6px 20px rgba(16, 185, 129, 0.3)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.opacity = "1";
+              e.currentTarget.style.background = "#10b981";
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 4px 16px rgba(6,182,212,0.35)";
+              e.currentTarget.style.boxShadow = "0 4px 12px rgba(16, 185, 129, 0.2)";
             }}
           >
             Get Started <ArrowRight size={15} />
@@ -278,9 +278,9 @@ export default function Home() {
           <h1
             style={{
               fontFamily: "Outfit, sans-serif",
-              fontWeight: 800,
-              fontSize: "clamp(2.4rem, 6vw, 4rem)",
-              color: "#f0f9ff",
+              fontWeight: 950,
+              fontSize: "clamp(2.5rem, 7vw, 4.5rem)",
+              color: "#0f172a",
               margin: "0 0 20px 0",
               lineHeight: 1.12,
               letterSpacing: "-0.03em",
@@ -289,7 +289,7 @@ export default function Home() {
             Revolutionize Your{" "}
             <span
               style={{
-                background: "linear-gradient(135deg, #06b6d4, #38bdf8, #818cf8)",
+                background: "linear-gradient(135deg, #10b981, #059669)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
                 backgroundClip: "text",
@@ -332,22 +332,24 @@ export default function Home() {
                 padding: "14px 32px",
                 borderRadius: 13,
                 border: "none",
-                background: "linear-gradient(135deg, #06b6d4 0%, #0284c7 60%, #0e7490 100%)",
+                background: "#10b981",
                 color: "#fff",
-                fontSize: "1rem",
-                fontWeight: 700,
+                fontSize: "1.05rem",
+                fontWeight: 800,
                 cursor: "pointer",
-                boxShadow: "0 4px 24px rgba(6,182,212,0.45)",
+                boxShadow: "0 10px 25px rgba(16,185,129,0.25)",
                 fontFamily: "Outfit, sans-serif",
-                transition: "transform 0.2s, box-shadow 0.2s",
+                transition: "all 0.2s",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow = "0 8px 32px rgba(6,182,212,0.55)";
+                e.currentTarget.style.transform = "translateY(-3px)";
+                e.currentTarget.style.background = "#059669";
+                e.currentTarget.style.boxShadow = "0 15px 30px rgba(16,185,129,0.35)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 4px 24px rgba(6,182,212,0.45)";
+                e.currentTarget.style.background = "#10b981";
+                e.currentTarget.style.boxShadow = "0 10px 25px rgba(16,185,129,0.25)";
               }}
             >
               Start Diagnosis Now <ArrowRight size={18} />
@@ -360,27 +362,26 @@ export default function Home() {
                 gap: 8,
                 padding: "14px 32px",
                 borderRadius: 13,
-                background: "rgba(255,255,255,0.07)",
-                border: "1px solid rgba(255,255,255,0.16)",
-                color: "#bae6fd",
-                fontSize: "1rem",
-                fontWeight: 600,
+                background: "#ffffff",
+                border: "1px solid #e2e8f0",
+                color: "#475569",
+                fontSize: "1.05rem",
+                fontWeight: 700,
                 cursor: "pointer",
-                backdropFilter: "blur(8px)",
-                WebkitBackdropFilter: "blur(8px)",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
                 fontFamily: "Inter, sans-serif",
-                transition: "background 0.2s, border-color 0.2s",
+                transition: "all 0.2s",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(6,182,212,0.1)";
-                e.currentTarget.style.borderColor = "rgba(6,182,212,0.35)";
+                e.currentTarget.style.background = "#f8fafc";
+                e.currentTarget.style.borderColor = "#cbd5e1";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255,255,255,0.07)";
-                e.currentTarget.style.borderColor = "rgba(255,255,255,0.16)";
+                e.currentTarget.style.background = "#ffffff";
+                e.currentTarget.style.borderColor = "#e2e8f0";
               }}
             >
-              Sign In to Dashboard
+              Login to Dashboard
             </button>
           </div>
 
@@ -393,18 +394,19 @@ export default function Home() {
               marginTop: 52,
               padding: "24px 40px",
               borderRadius: 18,
-              background: "rgba(255,255,255,0.04)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              backdropFilter: "blur(12px)",
-              WebkitBackdropFilter: "blur(12px)",
+              background: "rgba(255,255,255,0.6)",
+              border: "1px solid #e2e8f0",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
               flexWrap: "wrap",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.02)",
             }}
           >
             <StatBadge value="50K+" label="Patients Helped" />
             <div
               style={{
                 width: 1,
-                background: "rgba(255,255,255,0.1)",
+                background: "#e2e8f0",
                 alignSelf: "stretch",
               }}
             />
@@ -438,10 +440,10 @@ export default function Home() {
           }}
         >
           <FeatureCard
-            icon={<Activity size={26} color="#06b6d4" />}
+            icon={<Activity size={26} color="#10b981" />}
             title="Symptom Analysis"
             description="Describe your symptoms in natural language. Our AI analyzes patterns and delivers precise care insights within seconds."
-            accent="#06b6d4"
+            accent="#10b981"
           />
           <FeatureCard
             icon={<UploadCloud size={26} color="#818cf8" />}
@@ -478,12 +480,11 @@ export default function Home() {
         {/* ── How It Works ── */}
         <div
           style={{
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.1)",
-            borderRadius: 24,
-            padding: "48px 40px",
-            backdropFilter: "blur(12px)",
-            WebkitBackdropFilter: "blur(12px)",
+            background: "#ffffff",
+            border: "1px solid #e2e8f0",
+            borderRadius: 32,
+            padding: "52px 40px",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.03)",
             marginBottom: 48,
           }}
         >
@@ -491,9 +492,9 @@ export default function Home() {
             style={{
               fontFamily: "Outfit, sans-serif",
               fontWeight: 800,
-              fontSize: "1.6rem",
-              color: "#e0f2fe",
-              margin: "0 0 8px 0",
+              fontSize: "1.8rem",
+              color: "#0f172a",
+              margin: "0 0 10px 0",
               textAlign: "center",
             }}
           >
@@ -501,10 +502,11 @@ export default function Home() {
           </h2>
           <p
             style={{
-              color: "rgba(186,230,253,0.5)",
+              color: "#64748b",
               textAlign: "center",
-              fontSize: "0.875rem",
-              margin: "0 0 40px 0",
+              fontSize: "0.95rem",
+              margin: "0 0 44px 0",
+              fontWeight: 500,
             }}
           >
             Get started in just 3 easy steps
@@ -541,8 +543,8 @@ export default function Home() {
                   style={{
                     fontFamily: "Outfit, sans-serif",
                     fontWeight: 800,
-                    fontSize: "2rem",
-                    background: "linear-gradient(135deg,#06b6d4,#818cf8)",
+                    fontSize: "2.4rem",
+                    background: "linear-gradient(135deg,#10b981,#059669)",
                     WebkitBackgroundClip: "text",
                     WebkitTextFillColor: "transparent",
                     backgroundClip: "text",
@@ -556,8 +558,8 @@ export default function Home() {
                   style={{
                     fontFamily: "Outfit, sans-serif",
                     fontWeight: 700,
-                    fontSize: "1rem",
-                    color: "#bae6fd",
+                    fontSize: "1.1rem",
+                    color: "#0f172a",
                     marginBottom: 6,
                   }}
                 >
@@ -565,10 +567,10 @@ export default function Home() {
                 </div>
                 <p
                   style={{
-                    color: "rgba(186,230,253,0.5)",
-                    fontSize: "0.85rem",
+                    color: "#64748b",
+                    fontSize: "0.95rem",
                     margin: 0,
-                    lineHeight: 1.65,
+                    lineHeight: 1.6,
                   }}
                 >
                   {desc}
@@ -584,10 +586,9 @@ export default function Home() {
             textAlign: "center",
             padding: "52px 40px",
             borderRadius: 24,
-            background: "linear-gradient(135deg, rgba(6,182,212,0.15) 0%, rgba(99,102,241,0.15) 100%)",
-            border: "1px solid rgba(6,182,212,0.25)",
-            backdropFilter: "blur(10px)",
-            WebkitBackdropFilter: "blur(10px)",
+            background: "linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%)",
+            border: "1px solid #dcfce7",
+            boxShadow: "0 10px 30px rgba(16,185,129,0.05)",
           }}
         >
           <div
@@ -596,21 +597,21 @@ export default function Home() {
               alignItems: "center",
               gap: 6,
               marginBottom: 16,
-              color: "#67e8f9",
-              fontSize: "0.78rem",
-              fontWeight: 600,
+              color: "#10b981",
+              fontSize: "0.85rem",
+              fontWeight: 800,
               textTransform: "uppercase",
               letterSpacing: "0.07em",
             }}
           >
-            <Star size={13} fill="#67e8f9" /> Free to Start
+            <Star size={14} fill="#10b981" /> Free to Start
           </div>
           <h2
             style={{
               fontFamily: "Outfit, sans-serif",
               fontWeight: 800,
-              fontSize: "1.8rem",
-              color: "#f0f9ff",
+              fontSize: "2.2rem",
+              color: "#0f172a",
               margin: "0 0 12px 0",
               letterSpacing: "-0.02em",
             }}
@@ -619,12 +620,12 @@ export default function Home() {
           </h2>
           <p
             style={{
-              color: "rgba(186,230,253,0.6)",
-              fontSize: "0.95rem",
-              marginBottom: 28,
-              maxWidth: 440,
-              margin: "0 auto 28px",
-              lineHeight: 1.7,
+              color: "#475569",
+              fontSize: "1.1rem",
+              marginBottom: 32,
+              maxWidth: 480,
+              margin: "0 auto 32px",
+              lineHeight: 1.6,
             }}
           >
             Join thousands of users already benefiting from AI-powered health management.
@@ -638,12 +639,12 @@ export default function Home() {
               padding: "14px 36px",
               borderRadius: 13,
               border: "none",
-              background: "linear-gradient(135deg, #06b6d4 0%, #0284c7 60%, #0e7490 100%)",
+              background: "#10b981",
               color: "#fff",
               fontSize: "1rem",
               fontWeight: 700,
               cursor: "pointer",
-              boxShadow: "0 4px 24px rgba(6,182,212,0.45)",
+              boxShadow: "0 8px 25px rgba(16,185,129,0.25)",
               fontFamily: "Outfit, sans-serif",
               transition: "transform 0.2s, box-shadow 0.2s",
             }}
@@ -665,7 +666,7 @@ export default function Home() {
           style={{
             marginTop: 40,
             paddingTop: 24,
-            borderTop: "1px solid rgba(255,255,255,0.07)",
+            borderTop: "1px solid #e2e8f0",
             textAlign: "center",
           }}
         >
@@ -675,9 +676,9 @@ export default function Home() {
               alignItems: "center",
               justifyContent: "center",
               gap: 6,
-              color: "rgba(148,163,184,0.5)",
-              fontSize: "0.75rem",
-              marginBottom: 8,
+              color: "#94a3b8",
+              fontSize: "0.85rem",
+              marginBottom: 10,
             }}
           >
             <ShieldCheck size={14} />
@@ -685,9 +686,9 @@ export default function Home() {
           </div>
           <p
             style={{
-              color: "rgba(148,163,184,0.4)",
-              fontSize: "0.72rem",
-              maxWidth: 560,
+              color: "#94a3b8",
+              fontSize: "0.8rem",
+              maxWidth: 620,
               margin: "0 auto",
               lineHeight: 1.6,
               fontStyle: "italic",

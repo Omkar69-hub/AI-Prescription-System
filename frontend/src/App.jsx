@@ -14,6 +14,7 @@ import UploadPrescription from "./components/UploadPrescription";
 import Recommendation from "./components/Recommendation";
 import History from "./components/History";
 import DoctorPatientHistory from "./components/DoctorPatientHistory";
+import Profile from "./components/Profile";
 
 /* ===========================
    AUTH PROTECTION
@@ -54,6 +55,10 @@ function App() {
         <Route
           path="/user/history"
           element={<RequireAuth><History /></RequireAuth>}
+        />
+        <Route
+          path="/profile"
+          element={<RequireAuth><Profile /></RequireAuth>}
         />
 
         {/* ── Doctor Route ── */}

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
     Stethoscope, Search, Upload, History as HistoryIcon,
-    LogOut, Users, LayoutDashboard
+    LogOut, Users, LayoutDashboard, User, Settings, UserCircle, ChevronDown
 } from "lucide-react";
 import { logoutUser } from "../utils/auth";
 import NotificationPanel from "./NotificationPanel";
@@ -23,6 +23,21 @@ export default function Layout({ children }) {
     const auth = getAuth();
     const role = auth.role || "patient";
     const user = auth.user || {};
+
+    const [userDropdownOpen, setUserDropdownOpen] = React.useState(false);
+    const userDropdownRef = React.useRef(null);
+
+    // Close user dropdown on outside click
+    useEffect(() => {
+        if (!userDropdownOpen) return;
+        const handler = (e) => {
+            if (userDropdownRef.current && !userDropdownRef.current.contains(e.target)) {
+                setUserDropdownOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, [userDropdownOpen]);
 
     // One-time session dosage reminder
     useEffect(() => {
@@ -62,26 +77,25 @@ export default function Layout({ children }) {
     const activeLabel = navItems.find(i => i.path === location.pathname)?.label || "Dashboard";
 
     const roleBadgeCls = role === "admin"
-        ? "bg-red-500/20 text-red-300 border-red-500/30"
+        ? "bg-rose-50 text-rose-600 border-rose-100"
         : role === "doctor"
-            ? "bg-blue-500/20 text-blue-300 border-blue-500/30"
-            : "bg-cyan-500/20 text-cyan-300 border-cyan-500/30";
+            ? "bg-blue-50 text-blue-600 border-blue-100"
+            : "bg-emerald-50 text-emerald-600 border-emerald-100";
 
     /* shared inline styles */
     const sidebarStyle = {
         width: 272,
         display: "flex", flexDirection: "column", flexShrink: 0,
-        background: "rgba(4,18,38,0.72)",
-        backdropFilter: "blur(22px)", WebkitBackdropFilter: "blur(22px)",
-        borderRight: "1px solid rgba(255,255,255,0.08)",
+        background: "#ffffff",
+        borderRight: "1px solid #e2e8f0",
         position: "relative", zIndex: 10,
     };
     const topbarStyle = {
         height: 72, display: "flex", alignItems: "center",
         justifyContent: "space-between", padding: "0 32px",
-        background: "rgba(4,18,38,0.65)",
-        backdropFilter: "blur(22px)", WebkitBackdropFilter: "blur(22px)",
-        borderBottom: "1px solid rgba(255,255,255,0.08)",
+        background: "rgba(255,255,255,0.85)",
+        backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
+        borderBottom: "1px solid #e2e8f0",
         position: "sticky", top: 0, zIndex: 20,
     };
 
@@ -99,14 +113,14 @@ export default function Layout({ children }) {
                 <div style={{ padding: "32px 28px 20px" }}>
                     <Link to="/" style={{ display: "flex", alignItems: "center", gap: 12, textDecoration: "none" }}>
                         <div style={{
-                            width: 40, height: 40, borderRadius: 12, flexShrink: 0,
-                            background: "linear-gradient(135deg,#06b6d4,#0e7490)",
+                            width: 38, height: 38, borderRadius: 12, flexShrink: 0,
+                            background: "#10b981",
                             display: "flex", alignItems: "center", justifyContent: "center",
-                            boxShadow: "0 4px 14px rgba(6,182,212,0.35)",
+                            boxShadow: "0 4px 12px rgba(16,185,129,0.2)",
                         }}>
-                            <Stethoscope size={22} color="#fff" />
+                            <Stethoscope size={20} color="#fff" />
                         </div>
-                        <span style={{ fontFamily: "Outfit,sans-serif", fontWeight: 700, fontSize: "1.1rem", color: "#fff", letterSpacing: "-0.02em" }}>
+                        <span style={{ fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.15rem", color: "#0f172a", letterSpacing: "-0.02em" }}>
                             AI Health
                         </span>
                     </Link>
@@ -114,7 +128,7 @@ export default function Layout({ children }) {
 
                 {/* Role badge */}
                 <div style={{ padding: "0 28px 20px" }}>
-                    <span className={`inline-block text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border ${roleBadgeCls}`}>
+                    <span className={`inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full border ${roleBadgeCls}`}>
                         {role === "admin" ? "Admin" : role === "doctor" ? "Doctor" : "Patient"} Portal
                     </span>
                 </div>
@@ -130,11 +144,11 @@ export default function Layout({ children }) {
                                 fontWeight: 600, fontSize: "0.875rem",
                                 textDecoration: "none",
                                 transition: "all 0.18s",
-                                background: active ? "rgba(6,182,212,0.18)" : "transparent",
-                                color: active ? "#67e8f9" : "rgba(186,230,253,0.6)",
-                                border: active ? "1px solid rgba(6,182,212,0.3)" : "1px solid transparent",
+                                background: active ? "#f0fdf4" : "transparent",
+                                color: active ? "#10b981" : "#475569",
+                                border: active ? "1px solid #dcfce7" : "1px solid transparent",
                             }}>
-                                <span style={{ color: active ? "#67e8f9" : "rgba(186,230,253,0.4)" }}>{item.icon}</span>
+                                <span style={{ color: active ? "#10b981" : "#94a3b8" }}>{item.icon}</span>
                                 {item.label}
                             </Link>
                         );
@@ -146,18 +160,18 @@ export default function Layout({ children }) {
                     <div style={{
                         display: "flex", alignItems: "center", gap: 10,
                         padding: "12px 14px", borderRadius: 14,
-                        background: "rgba(255,255,255,0.05)",
-                        border: "1px solid rgba(255,255,255,0.08)",
+                        background: "#f8fafc",
+                        border: "1px solid #e2e8f0",
                     }}>
                         <div style={{
                             width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-                            background: "linear-gradient(135deg,#06b6d4,#0284c7)",
+                            background: "#10b981",
                             display: "flex", alignItems: "center", justifyContent: "center",
                             fontWeight: 700, color: "#fff", fontSize: "0.875rem",
                         }}>{avatarLetter}</div>
                         <div style={{ minWidth: 0 }}>
-                            <p style={{ margin: 0, fontWeight: 700, color: "#e0f2fe", fontSize: "0.82rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{displayName}</p>
-                            <p style={{ margin: 0, fontSize: "0.7rem", color: "rgba(148,163,184,0.55)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email || ""}</p>
+                            <p style={{ margin: 0, fontWeight: 700, color: "#0f172a", fontSize: "0.82rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{displayName}</p>
+                            <p style={{ margin: 0, fontSize: "0.7rem", color: "#64748b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email || ""}</p>
                         </div>
                     </div>
                 </div>
@@ -168,11 +182,11 @@ export default function Layout({ children }) {
                         display: "flex", alignItems: "center", gap: 10,
                         width: "100%", padding: "10px 14px", borderRadius: 13,
                         background: "transparent", border: "1px solid transparent",
-                        color: "rgba(186,230,253,0.45)", fontWeight: 600, fontSize: "0.875rem",
+                        color: "#94a3b8", fontWeight: 600, fontSize: "0.875rem",
                         cursor: "pointer", transition: "all 0.18s", fontFamily: "Inter,sans-serif",
                     }}
-                        onMouseEnter={e => { e.currentTarget.style.background = "rgba(239,68,68,0.12)"; e.currentTarget.style.color = "#fca5a5"; e.currentTarget.style.borderColor = "rgba(239,68,68,0.22)"; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "rgba(186,230,253,0.45)"; e.currentTarget.style.borderColor = "transparent"; }}
+                        onMouseEnter={e => { e.currentTarget.style.background = "#fff1f2"; e.currentTarget.style.color = "#e11d48"; e.currentTarget.style.borderColor = "#ffe4e6"; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#94a3b8"; e.currentTarget.style.borderColor = "transparent"; }}
                     >
                         <LogOut size={18} /> Sign Out
                     </button>
@@ -184,19 +198,92 @@ export default function Layout({ children }) {
 
                 {/* Topbar */}
                 <header style={topbarStyle}>
-                    <h2 style={{ margin: 0, fontFamily: "Outfit,sans-serif", fontWeight: 700, fontSize: "1.1rem", color: "#e0f2fe" }}>
+                    <h2 style={{ margin: 0, fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.2rem", color: "#0f172a" }}>
                         {activeLabel}
                     </h2>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        {/* Full notification panel */}
                         <NotificationPanel />
-                        <div style={{
-                            width: 38, height: 38, borderRadius: 10,
-                            background: "linear-gradient(135deg,#06b6d4,#0284c7)",
-                            display: "flex", alignItems: "center", justifyContent: "center",
-                            fontWeight: 700, color: "#fff", fontSize: "0.875rem",
-                            boxShadow: "0 2px 10px rgba(6,182,212,0.3)",
-                        }}>{avatarLetter}</div>
+
+                        {/* User Account with Dropdown */}
+                        <div ref={userDropdownRef} style={{ position: "relative" }}>
+                            <button
+                                onClick={() => setUserDropdownOpen(!userDropdownOpen)}
+                                style={{
+                                    display: "flex", alignItems: "center", gap: 4,
+                                    background: "none", border: "none", padding: 0,
+                                    cursor: "pointer", borderRadius: 10,
+                                    transition: "all 0.2s",
+                                }}
+                            >
+                                <div style={{
+                                    width: 38, height: 38, borderRadius: 10,
+                                    background: "#10b981",
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    fontWeight: 700, color: "#fff", fontSize: "0.875rem",
+                                    boxShadow: "0 2px 8px rgba(16,185,129,0.2)",
+                                }}>{avatarLetter}</div>
+                                <ChevronDown size={14} color="#64748b" style={{
+                                    transform: userDropdownOpen ? "rotate(180deg)" : "rotate(0)",
+                                    transition: "transform 0.2s"
+                                }} />
+                            </button>
+
+                            {userDropdownOpen && (
+                                <div style={{
+                                    position: "absolute", top: 46, right: 0,
+                                    width: 220, background: "#ffffff",
+                                    border: "1px solid #e2e8f0", borderRadius: 18,
+                                    boxShadow: "0 20px 50px rgba(15,23,42,0.12)",
+                                    padding: "8px", zIndex: 1000,
+                                    animation: "cardIn 0.2s ease-out both"
+                                }}>
+                                    <div style={{ padding: "12px 14px 10px", borderBottom: "1px solid #f1f5f9", marginBottom: 6 }}>
+                                        <p style={{ margin: 0, fontWeight: 700, color: "#0f172a", fontSize: "0.875rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{displayName}</p>
+                                        <p style={{ margin: 0, fontSize: "0.72rem", color: "#64748b" }}>{user.email}</p>
+                                    </div>
+
+                                    {[
+                                        { label: "View Profile", icon: <User size={16} />, path: "/profile" },
+                                        { label: "Edit Profile", icon: <UserCircle size={16} />, path: "/profile" },
+                                        { label: "My History", icon: <HistoryIcon size={16} />, path: role === "admin" ? "/admin/dashboard" : "/user/history" },
+                                        { label: "Settings", icon: <Settings size={16} />, path: "#" },
+                                    ].map((opt, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => { opt.path !== "#" && navigate(opt.path); setUserDropdownOpen(false); }}
+                                            style={{
+                                                display: "flex", alignItems: "center", gap: 10,
+                                                width: "100%", padding: "10px 12px", borderRadius: 12,
+                                                background: "none", border: "none", cursor: "pointer",
+                                                color: "#475569", fontSize: "0.875rem", fontWeight: 500,
+                                                transition: "all 0.15s", textAlign: "left"
+                                            }}
+                                            onMouseEnter={e => e.currentTarget.style.background = "#f8fafc"}
+                                            onMouseLeave={e => e.currentTarget.style.background = "none"}
+                                        >
+                                            {opt.icon} {opt.label}
+                                        </button>
+                                    ))}
+
+                                    <div style={{ borderTop: "1px solid #f1f5f9", marginTop: 6, paddingTop: 6 }}>
+                                        <button
+                                            onClick={handleLogout}
+                                            style={{
+                                                display: "flex", alignItems: "center", gap: 10,
+                                                width: "100%", padding: "10px 12px", borderRadius: 12,
+                                                background: "none", border: "none", cursor: "pointer",
+                                                color: "#e11d48", fontSize: "0.875rem", fontWeight: 600,
+                                                transition: "all 0.15s", textAlign: "left"
+                                            }}
+                                            onMouseEnter={e => e.currentTarget.style.background = "#fff1f2"}
+                                            onMouseLeave={e => e.currentTarget.style.background = "none"}
+                                        >
+                                            <LogOut size={16} /> Logout
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </header>
 

@@ -4,29 +4,33 @@ import {
   Mail, Lock, Eye, EyeOff, AlertCircle, CheckCircle2,
   Loader2, ArrowRight, Stethoscope, ShieldCheck
 } from "lucide-react";
-import { loginUser } from "../services/api";
-import { addNotification } from "../utils/notifications";
 
-// ─── Floating animated particles ─────────────────────────────────────────────
+// ─── Floating particles ───────────────────────────────────────────────────────
 function Particles() {
-  const pts = Array.from({ length: 18 }, (_, i) => ({
-    id: i,
-    size: Math.random() * 4 + 2,
-    x: Math.random() * 100,
-    y: Math.random() * 100,
-    dur: Math.random() * 12 + 8,
-    delay: Math.random() * 6,
-    opacity: Math.random() * 0.5 + 0.15,
-  }));
+  const pts = React.useMemo(() =>
+    Array.from({ length: 18 }, (_, i) => ({
+      id: i,
+      size: 2 + (i * 0.3) % 4,
+      x: (i * 17 + 5) % 100,
+      y: (i * 23 + 10) % 100,
+      dur: 8 + (i % 7) * 1.5,
+      delay: (i % 6) * 1.1,
+      opacity: 0.15 + (i % 5) * 0.08,
+    })),
+    []);
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div style={{ position: "absolute", inset: 0, overflow: "hidden", pointerEvents: "none" }}>
       {pts.map((p) => (
         <div
           key={p.id}
-          className="absolute rounded-full bg-cyan-400"
           style={{
-            width: p.size, height: p.size,
-            left: `${p.x}%`, top: `${p.y}%`,
+            position: "absolute",
+            width: p.size,
+            height: p.size,
+            borderRadius: "50%",
+            background: "#10b981",
+            left: `${p.x}%`,
+            top: `${p.y}%`,
             opacity: p.opacity,
             animation: `floatUp ${p.dur}s ${p.delay}s ease-in-out infinite alternate`,
           }}
@@ -36,6 +40,7 @@ function Particles() {
   );
 }
 
+// ─── Main Login Component ─────────────────────────────────────────────────────
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,94 +51,108 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
-  const [redirecting, setRedirecting] = useState(false);
 
+  // Show message passed from Signup redirect
   useEffect(() => {
-    if (location.state?.message) setSuccessMsg(location.state.message);
-  }, [location.state]);
+    if (location.state?.message) {
+      setSuccessMsg(location.state.message);
+      // Clean the state so a refresh doesn't re-show it
+      window.history.replaceState({}, document.title);
+    }
+  }, []);
+
+  const clearError = () => setError("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!email.trim() || !password) {
-      setError("Please fill in both email and password.");
+    setError("");
+    setSuccessMsg("");
+
+    // ── Client-side guard ────────────────────────────────────────────────────
+    if (!email.trim()) {
+      setError("Please enter your email address.");
       return;
     }
-    setError(""); setSuccessMsg(""); setLoading(true);
+    if (!password) {
+      setError("Please enter your password.");
+      return;
+    }
+
+    setLoading(true);
     try {
-      localStorage.removeItem("auth");
-      const data = await loginUser({ email: email.trim().toLowerCase(), password });
+      const response = await fetch("http://127.0.0.1:8000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email.trim().toLowerCase(),
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Use the server's plain detail string
+        setError(data.detail || "Login failed. Please check your credentials.");
+        return;
+      }
+
+      // ── Store auth ────────────────────────────────────────────────────────
       localStorage.setItem("auth", JSON.stringify({
         token: data.access_token,
         role: data.role,
         user: data.user,
       }));
-      // Notify
-      addNotification({
-        type: "login",
-        title: "🔐 Login Successful",
-        message: `Welcome back! Signed in as ${data.user?.full_name || email}. Redirecting to your dashboard.`,
-      });
-      setRedirecting(true);
-      const path = data.redirect ||
-        (data.role === "admin" ? "/admin/dashboard"
-          : data.role === "doctor" ? "/doctor/history"
-            : "/user/symptom-search");
-      setTimeout(() => navigate(path), 1200);
+
+      setSuccessMsg(`Welcome back${data.user?.full_name ? ", " + data.user.full_name : ""}! Redirecting…`);
+
+      const redirectPath = data.redirect || "/user/symptom-search";
+      setTimeout(() => navigate(redirectPath), 1000);
     } catch (err) {
-      if (!err.response) {
-        setError("Cannot connect to the server. Please ensure the backend is running.");
-      } else {
-        setError(err.response?.data?.detail || "Invalid email or password. Please try again.");
-      }
+      setError("Cannot connect to the server. Please make sure the backend is running on port 8000.");
     } finally {
       setLoading(false);
     }
   };
 
+  const isSuccess = Boolean(successMsg) && !error;
+
   return (
     <div className="auth-root">
-      {/* Background */}
       <div className="auth-bg" />
       <div className="auth-overlay" />
       <Particles />
 
-      {/* Card */}
       <div className="auth-card-wrap">
         <div className="auth-card">
 
           {/* Logo */}
           <div className="auth-logo-wrap">
             <div className="auth-logo-icon">
-              <Stethoscope size={28} strokeWidth={2} color="#fff" />
+              <Stethoscope size={26} strokeWidth={2} color="#fff" />
             </div>
             <span className="auth-brand">AI Prescription</span>
           </div>
 
           <h1 className="auth-title">Welcome Back</h1>
-          <p className="auth-subtitle">Sign in to your medical dashboard</p>
+          <p className="auth-subtitle">Access your personalized medical assistant</p>
 
-          {/* Banners */}
-          {successMsg && (
-            <div className="auth-banner auth-banner-success">
-              <CheckCircle2 size={17} className="shrink-0" />
-              <span>{successMsg}</span>
-            </div>
-          )}
+          {/* ── Banners ──────────────────────────────────────────────────── */}
           {error && (
             <div className="auth-banner auth-banner-error">
-              <AlertCircle size={17} className="shrink-0" />
+              <AlertCircle size={17} style={{ flexShrink: 0 }} />
               <span>{error}</span>
             </div>
           )}
-          {redirecting && (
+          {isSuccess && (
             <div className="auth-banner auth-banner-success">
-              <CheckCircle2 size={17} className="shrink-0" />
-              <span>Login successful! Redirecting…</span>
+              <CheckCircle2 size={17} style={{ flexShrink: 0 }} />
+              <span>{successMsg}</span>
             </div>
           )}
 
-          {/* Form */}
-          <form onSubmit={handleLogin} className="auth-form" noValidate>
+          {/* ── Form ─────────────────────────────────────────────────────── */}
+          <form onSubmit={handleLogin} className="auth-form" noValidate autoComplete="off">
 
             {/* Email */}
             <div className="auth-field">
@@ -141,14 +160,14 @@ export default function Login() {
               <div className="auth-input-wrap">
                 <Mail className="auth-input-icon" size={16} />
                 <input
-                  id="login-email"
+                  id="auth-email"
                   type="email"
-                  autoComplete="username"
-                  required
+                  autoComplete="off"
                   placeholder="name@example.com"
                   className="auth-input"
                   value={email}
-                  onChange={(e) => { setEmail(e.target.value); setError(""); }}
+                  onChange={(e) => { setEmail(e.target.value); clearError(); }}
+                  disabled={isSuccess}
                 />
               </div>
             </div>
@@ -159,20 +178,21 @@ export default function Login() {
               <div className="auth-input-wrap">
                 <Lock className="auth-input-icon" size={16} />
                 <input
-                  id="login-password"
+                  id="auth-password"
                   type={showPass ? "text" : "password"}
-                  autoComplete="off"
-                  required
+                  autoComplete="new-password"
                   placeholder="••••••••"
                   className="auth-input pr-12"
                   value={password}
-                  onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                  onChange={(e) => { setPassword(e.target.value); clearError(); }}
+                  disabled={isSuccess}
                 />
                 <button
                   type="button"
                   className="auth-eye-btn"
                   onClick={() => setShowPass((v) => !v)}
                   aria-label={showPass ? "Hide password" : "Show password"}
+                  tabIndex={-1}
                 >
                   {showPass ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -182,26 +202,24 @@ export default function Login() {
             {/* Submit */}
             <button
               type="submit"
-              disabled={loading || redirecting}
+              disabled={loading || isSuccess}
               className="auth-submit-btn"
             >
-              {loading
-                ? <><Loader2 className="animate-spin" size={18} /> Signing in…</>
-                : redirecting
-                  ? <><CheckCircle2 size={18} /> Redirecting…</>
-                  : <>Sign In <ArrowRight size={18} /></>
-              }
+              {loading ? <><Loader2 className="animate-spin" size={18} /> Signing in…</>
+                : isSuccess ? <><CheckCircle2 size={18} /> Redirecting…</>
+                  : <>Login <ArrowRight size={18} /></>}
             </button>
           </form>
 
           {/* Footer */}
           <div className="auth-footer">
-            <ShieldCheck size={13} className="text-cyan-400/60" />
-            <span>Secure • HIPAA Compliant</span>
-            <span className="auth-divider-dot">·</span>
-            <span>Don't have an account?{" "}
-              <Link to="/signup" className="auth-link">Create one</Link>
-            </span>
+            <p>
+              Don't have an account? <Link to="/signup" className="auth-link">Create Account</Link>
+            </p>
+            <div className="auth-disclaimer">
+              <ShieldCheck size={16} />
+              <span>Secure, HIPAA compliant encryption</span>
+            </div>
           </div>
 
         </div>

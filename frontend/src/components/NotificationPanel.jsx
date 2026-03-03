@@ -138,10 +138,10 @@ export default function NotificationPanel() {
                 title="Notifications"
                 style={{
                     width: 38, height: 38, borderRadius: 10, position: "relative",
-                    background: open ? "rgba(6,182,212,0.18)" : "rgba(255,255,255,0.06)",
-                    border: open ? "1px solid rgba(6,182,212,0.4)" : "1px solid rgba(255,255,255,0.1)",
+                    background: open ? "#f0fdf4" : "#f8fafc",
+                    border: open ? "1px solid #10b981" : "1px solid #e2e8f0",
                     display: "flex", alignItems: "center", justifyContent: "center",
-                    color: open ? "#67e8f9" : "rgba(186,230,253,0.6)",
+                    color: open ? "#10b981" : "#64748b",
                     cursor: "pointer", transition: "all 0.18s",
                 }}
             >

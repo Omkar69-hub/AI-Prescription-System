@@ -77,7 +77,7 @@ export default function UploadPrescription() {
         {/* Header Section */}
         <div className="mb-10 text-center lg:text-left">
           <h1 className="text-3xl font-bold text-slate-900 font-outfit mb-3 flex items-center justify-center lg:justify-start gap-3">
-            <FileText className="text-indigo-500" /> Digital Prescription Analysis
+            <FileText className="text-emerald-500" /> Digital Prescription Analysis
           </h1>
           <p className="text-slate-500 max-w-2xl leading-relaxed">
             Upload your prescription (JPG, PNG, or PDF) for instant AI analysis. We'll extract medications, understand dosages, and suggest equivalent generic alternatives.
@@ -87,9 +87,9 @@ export default function UploadPrescription() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           {/* Upload Panel */}
           <div className="lg:col-span-5">
-            <div className="glass-card p-8 rounded-3xl border border-white/40 shadow-xl">
+            <div className="glass-card p-8 rounded-[32px] shadow-xl">
               <div
-                className={`border-2 border-dashed rounded-2xl p-8 transition-all duration-300 text-center flex flex-col items-center justify-center min-h-[300px] ${file ? "border-emerald-200 bg-emerald-50/30" : "border-slate-200 bg-slate-50 hover:border-indigo-300"
+                className={`border-2 border-dashed rounded-3xl p-8 transition-all duration-300 text-center flex flex-col items-center justify-center min-h-[300px] ${file ? "border-emerald-200 bg-emerald-50/40" : "border-slate-200 bg-slate-50/50 hover:border-emerald-300"
                   }`}
               >
                 {file ? (
@@ -119,7 +119,7 @@ export default function UploadPrescription() {
                       <FileImage size={32} />
                     </div>
                     <label className="cursor-pointer">
-                      <span className="text-indigo-600 font-bold hover:underline">Click to upload</span>
+                      <span className="text-emerald-600 font-bold hover:underline">Click to upload</span>
                       <p className="text-xs text-slate-400 mt-2">Supports JPG, PNG, PDF (Max 10MB)</p>
                       <input
                         type="file"
@@ -135,7 +135,7 @@ export default function UploadPrescription() {
               <button
                 onClick={(e) => { e.preventDefault(); handleUpload(); }}
                 disabled={loading || !file}
-                className={`w-full btn-primary mt-6 flex items-center justify-center gap-2 py-4 shadow-indigo-100 ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
+                className={`w-full btn-primary mt-6 flex items-center justify-center gap-2 py-4 shadow-emerald-50 ${loading ? "opacity-70 cursor-not-allowed" : ""}`}
               >
                 {loading ? (
                   <>
@@ -176,10 +176,10 @@ export default function UploadPrescription() {
             )}
 
             {loading && (
-              <div className="h-full min-h-[400px] bg-white/50 backdrop-blur-sm rounded-3xl flex flex-col items-center justify-center p-12 text-center border border-slate-100 animate-pulse">
-                <div className="w-16 h-16 border-4 border-indigo-100 border-t-indigo-500 rounded-full animate-spin mb-6"></div>
-                <h3 className="text-xl font-bold text-slate-500 font-outfit">Deep Semantic Search</h3>
-                <p className="text-sm text-slate-400 mt-2">Extracting pharmacy data and cross-referencing...</p>
+              <div className="h-full min-h-[400px] bg-white rounded-3xl flex flex-col items-center justify-center p-12 text-center border border-slate-100 animate-pulse">
+                <div className="w-16 h-16 border-4 border-emerald-100 border-t-emerald-500 rounded-full animate-spin mb-6"></div>
+                <h3 className="text-xl font-bold text-slate-500 font-outfit">Analyzing Document</h3>
+                <p className="text-sm text-slate-400 mt-2">Our AI is extracting medical data...</p>
               </div>
             )}
 
@@ -232,19 +232,19 @@ export default function UploadPrescription() {
                           {result.medicines?.length > 0 ? (
                             result.medicines.map((med, index) => (
                               <tr key={index} className="group">
-                                <td className="px-4 py-4 bg-slate-50/80 rounded-l-2xl border-y border-l border-slate-100 group-hover:bg-indigo-50/30 group-hover:border-indigo-100 transition-colors">
+                                <td className="px-4 py-4 bg-slate-50/80 rounded-l-2xl border-y border-l border-slate-100 group-hover:bg-emerald-50/40 group-hover:border-emerald-100 transition-colors">
                                   <div className="font-bold text-slate-900 text-sm">{med.brand}</div>
                                   <div className="text-[10px] text-slate-400 mt-0.5">{med.dosage || "N/A"}</div>
                                 </td>
-                                <td className="px-4 py-4 bg-slate-50/80 border-y border-slate-100 group-hover:bg-indigo-50/30 group-hover:border-indigo-100 transition-colors">
+                                <td className="px-4 py-4 bg-slate-50/80 border-y border-slate-100 group-hover:bg-emerald-50/40 group-hover:border-emerald-100 transition-colors">
                                   <div className="font-bold text-emerald-600 text-sm">{med.generic}</div>
                                 </td>
-                                <td className="px-4 py-4 bg-slate-50/80 border-y border-slate-100 group-hover:bg-indigo-50/30 group-hover:border-indigo-100 transition-colors">
+                                <td className="px-4 py-4 bg-slate-50/80 border-y border-slate-100 group-hover:bg-emerald-50/40 group-hover:border-emerald-100 transition-colors">
                                   <div className="font-bold text-slate-700 text-[11px]">{med.frequency}</div>
                                   <div className="text-[10px] text-slate-400 font-medium mt-0.5 italic">{med.timing}</div>
                                 </td>
-                                <td className="px-4 py-4 bg-slate-50/80 rounded-r-2xl border-y border-r border-slate-100 group-hover:bg-indigo-50/30 group-hover:border-indigo-100 transition-colors">
-                                  <div className="text-sm font-bold text-indigo-500">{med.duration}</div>
+                                <td className="px-4 py-4 bg-slate-50/80 rounded-r-2xl border-y border-r border-slate-100 group-hover:bg-emerald-50/40 group-hover:border-emerald-100 transition-colors">
+                                  <div className="text-sm font-bold text-emerald-600">{med.duration}</div>
                                 </td>
                               </tr>
                             ))

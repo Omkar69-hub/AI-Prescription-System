@@ -9,12 +9,10 @@ import Layout from "./Layout";
 import { addNotification, addDosageReminder, getCurrentDosageSlot } from "../utils/notifications";
 
 const cardStyle = {
-  background: "rgba(255,255,255,0.93)",
-  backdropFilter: "blur(16px)",
-  WebkitBackdropFilter: "blur(16px)",
+  background: "#ffffff",
   borderRadius: 24,
-  border: "1px solid rgba(255,255,255,0.6)",
-  boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
+  border: "1px solid #e2e8f0",
+  boxShadow: "0 8px 30px rgba(0,0,0,0.03)",
   padding: "32px",
   position: "relative",
   overflow: "hidden",
@@ -71,14 +69,14 @@ export default function SymptomSearch() {
         <div style={{ marginBottom: 28 }}>
           <h1 style={{
             fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.8rem",
-            color: "#e0f2fe", margin: "0 0 8px 0",
+            color: "#0f172a", margin: "0 0 8px 0",
             display: "flex", alignItems: "center", gap: 10,
           }}>
-            <Activity style={{ color: "#06b6d4" }} size={28} />
+            <Activity style={{ color: "#10b981" }} size={28} />
             AI Symptom Analysis
           </h1>
           <p style={{
-            color: "rgba(186,230,253,0.65)", fontSize: "0.9rem",
+            color: "#64748b", fontSize: "0.95rem",
             margin: 0, maxWidth: 580, lineHeight: 1.65,
           }}>
             Describe how you're feeling in natural language. Our advanced AI will analyze your
@@ -108,12 +106,12 @@ export default function SymptomSearch() {
                 borderRadius: 14, fontSize: "1rem", color: "#1e293b",
                 fontFamily: "Inter,sans-serif", lineHeight: 1.65,
                 resize: "none", outline: "none", boxSizing: "border-box",
-                transition: "border-color 0.2s, box-shadow 0.2s",
+                transition: "all 0.2s",
               }}
               placeholder="Example: I've been having a persistent dry cough and mild fever for the last two days, along with some body ache…"
               value={symptoms}
               onChange={(e) => { setSymptoms(e.target.value); if (error) setError(""); }}
-              onFocus={e => { e.target.style.borderColor = "#06b6d4"; e.target.style.boxShadow = "0 0 0 3px rgba(6,182,212,0.12)"; }}
+              onFocus={e => { e.target.style.borderColor = "#10b981"; e.target.style.boxShadow = "0 0 0 3px rgba(16,185,129,0.1)"; }}
               onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
             />
 
@@ -131,9 +129,9 @@ export default function SymptomSearch() {
                   cursor: loading || !symptoms.trim() ? "not-allowed" : "pointer",
                   background: loading || !symptoms.trim()
                     ? "#94a3b8"
-                    : "linear-gradient(135deg,#06b6d4,#0284c7)",
+                    : "#10b981",
                   color: "#fff",
-                  boxShadow: loading || !symptoms.trim() ? "none" : "0 4px 16px rgba(6,182,212,0.35)",
+                  boxShadow: loading || !symptoms.trim() ? "none" : "0 8px 20px rgba(16,185,129,0.25)",
                   transition: "all 0.2s",
                   opacity: loading || !symptoms.trim() ? 0.6 : 1,
                 }}

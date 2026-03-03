@@ -47,31 +47,48 @@ except ImportError:
 # ─────────────────────────────────────────────────
 def _ocr_image(pil_image: Image.Image) -> str:
     """
-    Run Tesseract with multiple Page Segmentation Modes and return
-    the longest (richest) result — handles both printed and handwritten rx.
+    Run Tesseract with multiple Page Segmentation Modes and OCR Engine Modes.
+    Returns the longest extraction — handles both printed and handwritten rx.
     """
     processed = preprocess_image(pil_image)
 
     results = []
-    for psm in (6, 11, 3):
+    # PSM 6: Uniform block of text
+    # PSM 11: Sparse text / find as much text as possible
+    # PSM 4: Columnar text
+    # OEM 1: LSTM only (Better for handwriting)
+    # OEM 3: Default (Auto)
+    configs = [
+        "--psm 6 --oem 3",
+        "--psm 11 --oem 3",
+        "--psm 4 --oem 1",
+        "--psm 6 --oem 1"
+    ]
+
+    for config in configs:
         try:
-            config = f"--psm {psm} --oem 3"
             text = pytesseract.image_to_string(processed, config=config, lang="eng")
-            results.append(text.strip())
+            if text.strip():
+                results.append(text.strip())
         except Exception:
             pass
 
     # Also try on the raw (un-processed) image as a fallback
     try:
         raw_text = pytesseract.image_to_string(pil_image, config="--psm 6 --oem 3", lang="eng")
-        results.append(raw_text.strip())
+        if raw_text.strip():
+            results.append(raw_text.strip())
     except Exception:
         pass
 
-    # Return the longest extraction; it usually captures the most content
     if not results:
-        raise RuntimeError("Tesseract produced no output. Check Tesseract installation.")
+        # Final fallback: just try any output
+        try:
+            return pytesseract.image_to_string(processed)
+        except:
+            raise RuntimeError("Tesseract produced no output. Check Tesseract installation.")
 
+    # Return the longest extraction; it usually captures the most content
     return max(results, key=len)
 
 
@@ -81,9 +98,8 @@ def _ocr_image(pil_image: Image.Image) -> str:
 def extract_text_from_pdf(pdf_bytes: bytes) -> str:
     """Extract text from PDF using PyMuPDF and OCR for scanned pages."""
     if not _FITZ_AVAILABLE:
-        raise RuntimeError(
-            "PyMuPDF is not installed. Run: pip install PyMuPDF"
-        )
+        raise RuntimeError("PyMuPDF is not installed. Run: pip install PyMuPDF")
+        
     text_parts = []
     try:
         doc = fitz.open(stream=pdf_bytes, filetype="pdf")
@@ -103,10 +119,7 @@ def extract_text_from_pdf(pdf_bytes: bytes) -> str:
 
     combined = "\n".join(text_parts).strip()
     if not combined:
-        raise RuntimeError(
-            "No text could be extracted from the PDF. "
-            "Ensure the file is a valid, legible prescription."
-        )
+        raise RuntimeError("No text could be extracted from the PDF.")
     return combined
 
 
@@ -121,12 +134,8 @@ def extract_text_from_image(image_bytes: bytes) -> str:
         raise RuntimeError(f"Cannot open image: {e}")
 
     text = _ocr_image(image)
-
     if not text:
-        raise RuntimeError(
-            "No text could be extracted from the image. "
-            "Please upload a clearer photo of the prescription."
-        )
+        raise RuntimeError("No text could be extracted from the image. Please use a clearer photo.")
     return text
 
 
@@ -136,49 +145,45 @@ def extract_text_from_image(image_bytes: bytes) -> str:
 def detect_medicines(text: str, available_medicines: list) -> list:
     """
     Match extracted text against the medicine database using fuzzy matching.
-
-    Strategy:
-      1. Build a flat list of brand names.
-      2. Tokenise the OCR text into overlapping 1-word and 2-word phrases.
-      3. For every token/phrase, use rapidfuzz WRatio scorer with a
-         configurable threshold (default 78).
-      4. Deduplicate and return structured results.
     """
-    if not available_medicines:
+    if not available_medicines or not text:
         return []
 
-    brand_names = [med["brand_name"] for med in available_medicines]
+    # Prepare brand list
+    brand_data = {med["brand_name"].lower(): med for med in available_medicines}
+    brand_names = list(brand_data.keys())
 
-    # Build query tokens: individual words (≥4 chars) + two-word phrases
-    words = re.findall(r"\b\w{3,}\b", text)
+    # Tokenise OCR text: individual words + bigrams
+    # Use lowercase for easier matching
+    clean_text = text.lower()
+    words = re.findall(r"\b\w{3,}\b", clean_text)
     tokens = set(words)
     for i in range(len(words) - 1):
         tokens.add(f"{words[i]} {words[i+1]}")
 
-    THRESHOLD = 78  # lower than before to catch partial spellings in handwriting
+    THRESHOLD = 75 # Lowered to catch messy handwriting
     seen_brands: set = set()
-    detected: list = []
+    detected_list: list = []
 
     for token in tokens:
+        # Fast fuzzy match against whole brand name list
         match = process.extractOne(token, brand_names, scorer=fuzz.WRatio)
         if match and match[1] >= THRESHOLD:
-            matched_brand = match[0]
-            if matched_brand not in seen_brands:
-                seen_brands.add(matched_brand)
-                med_obj = next(
-                    (m for m in available_medicines if m["brand_name"] == matched_brand),
-                    None,
-                )
-                if med_obj is None:
-                    continue
-                instructions = parse_dosage_and_timing(text, matched_brand)
-                detected.append({
+            matched_brand_lower = match[0]
+            if matched_brand_lower not in seen_brands:
+                seen_brands.add(matched_brand_lower)
+                med_obj = brand_data[matched_brand_lower]
+                
+                # Parse specific instructions from text
+                instr = parse_dosage_and_timing(text, med_obj["brand_name"])
+                
+                detected_list.append({
                     "brand":     med_obj["brand_name"],
                     "generic":   med_obj["generic_name"],
-                    "dosage":    med_obj.get("dosage", "N/A"),
-                    "frequency": instructions["frequency"],
-                    "timing":    instructions["timing"],
-                    "duration":  instructions["duration"],
+                    "dosage":    instr["dosage"] if instr["dosage"] != "As specified" else med_obj.get("dosage", "N/A"),
+                    "frequency": instr["frequency"],
+                    "timing":    instr["timing"],
+                    "duration":  instr["duration"],
                 })
 
-    return detected
+    return detected_list
