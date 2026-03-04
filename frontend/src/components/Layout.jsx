@@ -86,17 +86,18 @@ export default function Layout({ children }) {
     const sidebarStyle = {
         width: 272,
         display: "flex", flexDirection: "column", flexShrink: 0,
-        background: "var(--color-bg-light)",
-        borderRight: "1px solid var(--color-border-dark, #e2e8f0)",
+        background: "rgba(var(--sidebar-bg-rgb, 255, 255, 255), 0.5)",
+        backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
+        borderRight: "1px solid var(--color-border-subtle)",
         position: "relative", zIndex: 10,
         transition: "all 0.3s ease",
     };
     const topbarStyle = {
         height: 72, display: "flex", alignItems: "center",
         justifyContent: "space-between", padding: "0 32px",
-        background: "var(--color-bg-light)",
-        backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
-        borderBottom: "1px solid var(--color-border-dark, #e2e8f0)",
+        background: "rgba(var(--topbar-bg-rgb, 255, 255, 255), 0.5)",
+        backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)",
+        borderBottom: "1px solid var(--color-border-subtle)",
         position: "sticky", top: 0, zIndex: 20,
         transition: "all 0.3s ease",
     };
