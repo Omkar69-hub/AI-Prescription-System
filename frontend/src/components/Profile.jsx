@@ -85,7 +85,7 @@ export default function Profile() {
 
     return (
         <Layout>
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-6xl mx-auto">
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-slate-900 font-outfit mb-2">My Profile</h1>
                     <p className="text-slate-500">Manage your personal information and account settings.</p>
@@ -105,7 +105,7 @@ export default function Profile() {
                     </div>
                 )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                     {/* Avatar Card */}
                     <div className="lg:col-span-1">
                         <div className="glass-card p-8 rounded-[32px] border border-slate-100 shadow-xl flex flex-col items-center text-center">
@@ -129,7 +129,7 @@ export default function Profile() {
                     </div>
 
                     {/* Details Card */}
-                    <div className="lg:col-span-2">
+                    <div className="lg:col-span-3">
                         <div className="glass-card p-8 rounded-[32px] border border-slate-100 shadow-xl">
                             <div className="flex items-center justify-between mb-8">
                                 <h3 className="text-xl font-bold text-slate-900 flex items-center gap-3">
@@ -225,9 +225,9 @@ export default function Profile() {
                                         <div className="p-3 bg-slate-50 rounded-2xl text-slate-400">
                                             <Mail size={20} />
                                         </div>
-                                        <div>
+                                        <div className="min-w-0">
                                             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Email Address</p>
-                                            <p className="text-slate-900 font-bold">{user?.email}</p>
+                                            <p className="text-slate-900 font-bold break-all">{user?.email}</p>
                                         </div>
                                     </div>
 

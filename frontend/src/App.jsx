@@ -15,6 +15,7 @@ import Recommendation from "./components/Recommendation";
 import History from "./components/History";
 import DoctorPatientHistory from "./components/DoctorPatientHistory";
 import Profile from "./components/Profile";
+import Settings from "./components/Settings";
 
 /* ===========================
    AUTH PROTECTION
@@ -59,6 +60,10 @@ function App() {
         <Route
           path="/profile"
           element={<RequireAuth><Profile /></RequireAuth>}
+        />
+        <Route
+          path="/settings"
+          element={<RequireAuth><Settings /></RequireAuth>}
         />
 
         {/* ── Doctor Route ── */}

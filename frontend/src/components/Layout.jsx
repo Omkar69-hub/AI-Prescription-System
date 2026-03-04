@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
     Stethoscope, Search, Upload, History as HistoryIcon,
-    LogOut, Users, LayoutDashboard, User, Settings, UserCircle, ChevronDown
+    LogOut, Users, LayoutDashboard, User, Settings as SettingsIcon, UserCircle, ChevronDown
 } from "lucide-react";
 import { logoutUser } from "../utils/auth";
 import NotificationPanel from "./NotificationPanel";
@@ -86,17 +86,19 @@ export default function Layout({ children }) {
     const sidebarStyle = {
         width: 272,
         display: "flex", flexDirection: "column", flexShrink: 0,
-        background: "#ffffff",
-        borderRight: "1px solid #e2e8f0",
+        background: "var(--color-bg-light)",
+        borderRight: "1px solid var(--color-border-dark, #e2e8f0)",
         position: "relative", zIndex: 10,
+        transition: "all 0.3s ease",
     };
     const topbarStyle = {
         height: 72, display: "flex", alignItems: "center",
         justifyContent: "space-between", padding: "0 32px",
-        background: "rgba(255,255,255,0.85)",
+        background: "var(--color-bg-light)",
         backdropFilter: "blur(12px)", WebkitBackdropFilter: "blur(12px)",
-        borderBottom: "1px solid #e2e8f0",
+        borderBottom: "1px solid var(--color-border-dark, #e2e8f0)",
         position: "sticky", top: 0, zIndex: 20,
+        transition: "all 0.3s ease",
     };
 
     return (
@@ -120,7 +122,13 @@ export default function Layout({ children }) {
                         }}>
                             <Stethoscope size={20} color="#fff" />
                         </div>
-                        <span style={{ fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.15rem", color: "#0f172a", letterSpacing: "-0.02em" }}>
+                        <span style={{
+                            fontFamily: "Outfit,sans-serif",
+                            fontWeight: 800,
+                            fontSize: "1.15rem",
+                            color: "var(--color-brand-primary)",
+                            letterSpacing: "-0.02em"
+                        }}>
                             AI Health
                         </span>
                     </Link>
@@ -160,8 +168,8 @@ export default function Layout({ children }) {
                     <div style={{
                         display: "flex", alignItems: "center", gap: 10,
                         padding: "12px 14px", borderRadius: 14,
-                        background: "#f8fafc",
-                        border: "1px solid #e2e8f0",
+                        background: "rgba(var(--color-accent-emerald-rgb, 16, 185, 129), 0.05)",
+                        border: "1px solid var(--color-border-dark, #e2e8f0)",
                     }}>
                         <div style={{
                             width: 36, height: 36, borderRadius: 10, flexShrink: 0,
@@ -170,8 +178,8 @@ export default function Layout({ children }) {
                             fontWeight: 700, color: "#fff", fontSize: "0.875rem",
                         }}>{avatarLetter}</div>
                         <div style={{ minWidth: 0 }}>
-                            <p style={{ margin: 0, fontWeight: 700, color: "#0f172a", fontSize: "0.82rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{displayName}</p>
-                            <p style={{ margin: 0, fontSize: "0.7rem", color: "#64748b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email || ""}</p>
+                            <p style={{ margin: 0, fontWeight: 700, color: "var(--color-brand-primary)", fontSize: "0.82rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{displayName}</p>
+                            <p style={{ margin: 0, fontSize: "0.7rem", color: "var(--color-brand-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{user.email || ""}</p>
                         </div>
                     </div>
                 </div>
@@ -198,7 +206,7 @@ export default function Layout({ children }) {
 
                 {/* Topbar */}
                 <header style={topbarStyle}>
-                    <h2 style={{ margin: 0, fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.2rem", color: "#0f172a" }}>
+                    <h2 style={{ margin: 0, fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.2rem", color: "var(--color-brand-primary)" }}>
                         {activeLabel}
                     </h2>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -244,9 +252,8 @@ export default function Layout({ children }) {
 
                                     {[
                                         { label: "View Profile", icon: <User size={16} />, path: "/profile" },
-                                        { label: "Edit Profile", icon: <UserCircle size={16} />, path: "/profile" },
                                         { label: "My History", icon: <HistoryIcon size={16} />, path: role === "admin" ? "/admin/dashboard" : "/user/history" },
-                                        { label: "Settings", icon: <Settings size={16} />, path: "#" },
+                                        { label: "Settings", icon: <SettingsIcon size={16} />, path: "/settings" },
                                     ].map((opt, idx) => (
                                         <button
                                             key={idx}

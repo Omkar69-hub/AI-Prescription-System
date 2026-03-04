@@ -9,6 +9,19 @@
   --color-accent-indigo: #6366f1;
   --color-accent-cyan: #06b6d4;
   --color-bg-light: #f8fafc;
+
+  /* Dark mode variants */
+  --color-bg-dark: #020617;
+  --color-card-dark: #0f172a;
+  --color-text-dark-primary: #f8fafc;
+  --color-text-dark-secondary: #94a3b8;
+  --color-border-dark: #1e293b;
+}
+
+:root.dark {
+  --color-brand-primary: #ffffff;
+  --color-brand-secondary: #cbd5e1;
+  --color-bg-light: #020617;
 }
 
 @layer base {
@@ -44,19 +57,44 @@
   .glass-card {
     @apply bg-white border border-slate-100 shadow-xl;
     backdrop-filter: none;
+    transition: all 0.3s ease;
+  }
+
+  .dark .glass-card {
+    @apply bg-slate-900/50 border-slate-800 shadow-2xl;
+    backdrop-filter: blur(16px);
   }
 
   .btn-primary {
     @apply px-6 py-3 bg-accent-emerald hover:bg-emerald-600 text-white rounded-xl transition-all duration-300 font-bold shadow-md hover:shadow-emerald-100 hover:-translate-y-0.5;
   }
 
+  .dark .btn-primary {
+    @apply shadow-emerald-900/20 hover:shadow-emerald-900/40;
+  }
+
   .btn-secondary {
     @apply px-6 py-3 bg-white hover:bg-slate-50 text-brand-primary border border-slate-200 rounded-xl transition-all duration-300 font-semibold shadow-sm hover:-translate-y-0.5;
   }
 
+  .dark .btn-secondary {
+    @apply bg-slate-800 hover:bg-slate-700 text-slate-100 border-slate-700 shadow-none;
+  }
+
   .input-field {
     @apply w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-accent-emerald/10 focus:border-accent-emerald transition-all outline-none;
+    color: var(--color-brand-primary);
   }
+
+  .dark .input-field {
+    @apply bg-slate-950 border-slate-800 text-slate-100 focus:ring-accent-emerald/5;
+  }
+}
+
+.dark .app-bg-fixed {
+  background-color: var(--color-bg-dark);
+  background-image: url('/images/bg-dark.png');
+  opacity: 0.95;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════
@@ -81,8 +119,18 @@
 .auth-bg {
   position: fixed;
   inset: 0;
-  background: #f1f5f9;
+  background-color: var(--color-bg-light);
+  background-image: url('/images/bg-light.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   z-index: 0;
+  transition: all 0.4s ease-in-out;
+}
+
+.dark .auth-bg {
+  background-color: var(--color-bg-dark);
+  background-image: url('/images/bg-dark.png');
 }
 
 .auth-overlay {
@@ -97,8 +145,13 @@
 .app-bg-fixed {
   position: fixed;
   inset: 0;
-  background-color: #f8fafc;
+  background-color: var(--color-bg-light);
+  background-image: url('/images/bg-light.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   z-index: -2;
+  transition: all 0.4s ease-in-out;
   pointer-events: none;
 }
 
