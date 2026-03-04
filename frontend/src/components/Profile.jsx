@@ -87,8 +87,8 @@ export default function Profile() {
         <Layout>
             <div className="max-w-6xl mx-auto">
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-slate-900 font-outfit mb-2">My Profile</h1>
-                    <p className="text-slate-500">Manage your personal information and account settings.</p>
+                    <h1 className="text-3xl font-bold text-slate-900 dark:text-white font-outfit mb-2">My Profile</h1>
+                    <p className="text-slate-500 dark:text-slate-400">Manage your personal information and account settings.</p>
                 </div>
 
                 {error && (
@@ -112,8 +112,8 @@ export default function Profile() {
                             <div className="w-24 h-24 rounded-3xl bg-emerald-500 text-white flex items-center justify-center text-4xl font-bold shadow-lg mb-4">
                                 {user?.full_name ? user.full_name[0].toUpperCase() : user?.email?.[0].toUpperCase()}
                             </div>
-                            <h3 className="text-xl font-bold text-slate-900">{user?.full_name || "User"}</h3>
-                            <p className="text-slate-500 text-sm mb-6 capitalize">{user?.role} Portal</p>
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-white">{user?.full_name || "User"}</h3>
+                            <p className="text-slate-500 dark:text-slate-400 text-sm mb-6 capitalize">{user?.role} Portal</p>
 
                             <div className="w-full border-t border-slate-100 pt-6">
                                 <div className="flex items-center justify-between text-sm mb-4">
@@ -132,7 +132,7 @@ export default function Profile() {
                     <div className="lg:col-span-3">
                         <div className="glass-card p-8 rounded-[32px] border border-slate-100 shadow-xl">
                             <div className="flex items-center justify-between mb-8">
-                                <h3 className="text-xl font-bold text-slate-900 flex items-center gap-3">
+                                <h3 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
                                     <User className="text-emerald-500" size={24} /> Basic Information
                                 </h3>
                                 {!editing && (
@@ -212,42 +212,42 @@ export default function Profile() {
                             ) : (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-12">
                                     <div className="flex items-start gap-4">
-                                        <div className="p-3 bg-slate-50 rounded-2xl text-slate-400">
+                                        <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-2xl text-slate-400 dark:text-slate-500">
                                             <User size={20} />
                                         </div>
                                         <div>
-                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Full Name</p>
-                                            <p className="text-slate-900 font-bold">{user?.full_name || "Not set"}</p>
+                                            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Full Name</p>
+                                            <p className="text-slate-900 dark:text-white font-bold">{user?.full_name || "Not set"}</p>
                                         </div>
                                     </div>
 
                                     <div className="flex items-start gap-4">
-                                        <div className="p-3 bg-slate-50 rounded-2xl text-slate-400">
+                                        <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-2xl text-slate-400 dark:text-slate-500">
                                             <Mail size={20} />
                                         </div>
                                         <div className="min-w-0">
-                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Email Address</p>
-                                            <p className="text-slate-900 font-bold break-all">{user?.email}</p>
+                                            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Email Address</p>
+                                            <p className="text-slate-900 dark:text-white font-bold break-all">{user?.email}</p>
                                         </div>
                                     </div>
 
                                     <div className="flex items-start gap-4">
-                                        <div className="p-3 bg-slate-50 rounded-2xl text-slate-400">
+                                        <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-2xl text-slate-400 dark:text-slate-500">
                                             <Phone size={20} />
                                         </div>
                                         <div>
-                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Phone Number</p>
-                                            <p className="text-slate-900 font-bold">{user?.phone || "Not provided"}</p>
+                                            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Phone Number</p>
+                                            <p className="text-slate-900 dark:text-white font-bold">{user?.phone || "Not provided"}</p>
                                         </div>
                                     </div>
 
                                     <div className="flex items-start gap-4">
-                                        <div className="p-3 bg-slate-50 rounded-2xl text-slate-400">
+                                        <div className="p-3 bg-slate-50 dark:bg-slate-800 rounded-2xl text-slate-400 dark:text-slate-500">
                                             <Shield size={20} />
                                         </div>
                                         <div>
-                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Account Type</p>
-                                            <p className="text-slate-900 font-bold capitalize">{user?.role}</p>
+                                            <p className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">Account Type</p>
+                                            <p className="text-slate-900 dark:text-white font-bold capitalize">{user?.role}</p>
                                         </div>
                                     </div>
                                 </div>

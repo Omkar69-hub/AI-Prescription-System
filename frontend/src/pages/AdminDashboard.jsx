@@ -95,20 +95,20 @@ export default function AdminDashboard() {
         {/* Header */}
         <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-slate-900 font-outfit mb-3 flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white font-outfit mb-3 flex items-center gap-3">
               <ShieldAlert className="text-red-500" /> Administrative Console
             </h1>
-            <p className="text-slate-500 max-w-xl leading-relaxed">
+            <p className="text-slate-500 dark:text-slate-400 max-w-xl leading-relaxed">
               Manage the health intelligence database. Map pharmaceutical brands to their generic equivalents and associate them with health conditions.
             </p>
           </div>
-          <div className="flex items-center gap-4 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm">
-            <div className="px-4 py-2 bg-slate-50 text-slate-500 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center gap-2">
+          <div className="flex items-center gap-4 bg-white dark:bg-slate-900 p-2 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="px-4 py-2 bg-slate-50 dark:bg-slate-800 text-slate-500 dark:text-slate-400 rounded-xl font-bold text-xs uppercase tracking-widest flex items-center gap-2">
               <Database size={14} /> {medicines.length} Records
             </div>
             <button
               onClick={fetchMedicines}
-              className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl hover:bg-emerald-100 transition-colors"
+              className="p-2.5 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl hover:bg-emerald-100 transition-colors"
             >
               <RefreshCcw size={20} className={fetching ? "animate-spin" : ""} />
             </button>
@@ -118,8 +118,8 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Add Form */}
           <div className="lg:col-span-4">
-            <div className="glass-card p-8 rounded-[32px] border border-slate-100 shadow-xl sticky top-28">
-              <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+            <div className="glass-card p-8 rounded-[32px] border border-slate-100 dark:border-slate-800 shadow-xl sticky top-28">
+              <h3 className="text-lg font-bold text-slate-800 dark:text-white mb-6 flex items-center gap-2">
                 <Plus size={20} className="text-emerald-500" /> Add New Mapping
               </h3>
 
@@ -214,17 +214,17 @@ export default function AdminDashboard() {
                       </tr>
                     ) : (
                       medicines.map((med) => (
-                        <tr key={med.id} className="hover:bg-slate-50/50 transition-colors group">
+                        <tr key={med.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group">
                           <td className="px-8 py-5">
-                            <span className="font-bold text-slate-700">{med.brand}</span>
+                            <span className="font-bold text-slate-700 dark:text-slate-200">{med.brand}</span>
                           </td>
                           <td className="px-8 py-5">
-                            <span className="inline-flex items-center gap-1.5 text-emerald-600 font-bold bg-emerald-50 px-2.5 py-1 rounded-lg text-sm">
+                            <span className="inline-flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-500/10 px-2.5 py-1 rounded-lg text-sm">
                               <CheckCircle2 size={14} /> {med.generic}
                             </span>
                           </td>
                           <td className="px-8 py-5">
-                            <span className="text-slate-500 font-medium italic">{med.disease}</span>
+                            <span className="text-slate-500 dark:text-slate-400 font-medium italic">{med.disease}</span>
                           </td>
                           <td className="px-8 py-5 text-center">
                             <button

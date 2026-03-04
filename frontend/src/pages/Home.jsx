@@ -50,14 +50,15 @@ function FeatureCard({ icon, title, description, accent }) {
   return (
     <div
       style={{
-        background: "rgba(255,255,255,0.8)",
+        background: "var(--color-bg-card)",
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
-        border: "1px solid #e2e8f0",
+        border: "1px solid var(--color-border-subtle)",
         borderRadius: 24,
         padding: "36px 30px",
         transition: "transform 0.3s, border-color 0.3s, box-shadow 0.3s",
         cursor: "default",
+        opacity: 0.95,
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.transform = "translateY(-8px)";
@@ -90,7 +91,7 @@ function FeatureCard({ icon, title, description, accent }) {
           fontFamily: "Outfit, sans-serif",
           fontWeight: 800,
           fontSize: "1.2rem",
-          color: "#0f172a",
+          color: "var(--color-brand-primary)",
           margin: "0 0 10px 0",
         }}
       >
@@ -98,7 +99,7 @@ function FeatureCard({ icon, title, description, accent }) {
       </h3>
       <p
         style={{
-          color: "#64748b",
+          color: "var(--color-brand-secondary)",
           fontSize: "0.95rem",
           margin: 0,
           lineHeight: 1.6,
@@ -126,7 +127,7 @@ function StatBadge({ value, label }) {
       >
         {value}
       </div>
-      <div style={{ color: "#64748b", fontSize: "0.85rem", fontWeight: 600 }}>
+      <div style={{ color: "var(--color-brand-secondary)", fontSize: "0.85rem", fontWeight: 600 }}>
         {label}
       </div>
     </div>
@@ -162,10 +163,11 @@ export default function Home() {
           alignItems: "center",
           justifyContent: "space-between",
           padding: "20px 48px",
-          borderBottom: "1px solid #e2e8f0",
-          background: "rgba(255,255,255,0.8)",
+          borderBottom: "1px solid var(--color-border-subtle)",
+          background: "var(--color-bg-card)",
           backdropFilter: "blur(12px)",
           WebkitBackdropFilter: "blur(12px)",
+          opacity: 0.9,
         }}
       >
         {/* Logo */}
@@ -280,7 +282,7 @@ export default function Home() {
               fontFamily: "Outfit, sans-serif",
               fontWeight: 950,
               fontSize: "clamp(2.5rem, 7vw, 4.5rem)",
-              color: "#0f172a",
+              color: "var(--color-brand-primary)",
               margin: "0 0 20px 0",
               lineHeight: 1.12,
               letterSpacing: "-0.03em",
@@ -299,21 +301,6 @@ export default function Home() {
             </span>
           </h1>
 
-          {/* Subtext */}
-          <p
-            style={{
-              color: "rgba(186,230,253,0.65)",
-              fontSize: "1.05rem",
-              maxWidth: 560,
-              margin: "0 auto 36px",
-              lineHeight: 1.75,
-            }}
-          >
-            Analyze symptoms, upload prescriptions, and discover affordable generic medicine
-            alternatives with our cutting-edge AI technology.
-          </p>
-
-          {/* CTA Buttons */}
           <div
             style={{
               display: "flex",
@@ -321,6 +308,7 @@ export default function Home() {
               justifyContent: "center",
               gap: 14,
               flexWrap: "wrap",
+              marginTop: 48,
             }}
           >
             <button
@@ -362,9 +350,9 @@ export default function Home() {
                 gap: 8,
                 padding: "14px 32px",
                 borderRadius: 13,
-                background: "#ffffff",
-                border: "1px solid #e2e8f0",
-                color: "#475569",
+                background: "var(--color-bg-card)",
+                border: "1px solid var(--color-border-subtle)",
+                color: "var(--color-brand-secondary)",
                 fontSize: "1.05rem",
                 fontWeight: 700,
                 cursor: "pointer",
@@ -373,12 +361,12 @@ export default function Home() {
                 transition: "all 0.2s",
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "#f8fafc";
-                e.currentTarget.style.borderColor = "#cbd5e1";
+                e.currentTarget.style.background = "rgba(16, 185, 129, 0.05)";
+                e.currentTarget.style.borderColor = "#10b981";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "#ffffff";
-                e.currentTarget.style.borderColor = "#e2e8f0";
+                e.currentTarget.style.background = "var(--color-bg-card)";
+                e.currentTarget.style.borderColor = "var(--color-border-subtle)";
               }}
             >
               Login to Dashboard
@@ -394,12 +382,13 @@ export default function Home() {
               marginTop: 52,
               padding: "24px 40px",
               borderRadius: 18,
-              background: "rgba(255,255,255,0.6)",
-              border: "1px solid #e2e8f0",
+              background: "var(--color-bg-card)",
+              border: "1px solid var(--color-border-subtle)",
               backdropFilter: "blur(8px)",
               WebkitBackdropFilter: "blur(8px)",
               flexWrap: "wrap",
               boxShadow: "0 4px 16px rgba(0,0,0,0.02)",
+              opacity: 0.9,
             }}
           >
             <StatBadge value="50K+" label="Patients Helped" />
@@ -493,7 +482,7 @@ export default function Home() {
               fontFamily: "Outfit, sans-serif",
               fontWeight: 800,
               fontSize: "1.8rem",
-              color: "#0f172a",
+              color: "var(--color-brand-primary)",
               margin: "0 0 10px 0",
               textAlign: "center",
             }}

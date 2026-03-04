@@ -32,15 +32,15 @@ export default function History() {
         {/* Header */}
         <div className="mb-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 font-outfit mb-3 flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white font-outfit mb-3 flex items-center gap-3">
               <HistoryIcon className="text-emerald-500" /> My Search History
             </h1>
-            <p className="text-slate-500 max-w-xl leading-relaxed">
+            <p className="text-slate-500 dark:text-slate-400 max-w-xl leading-relaxed">
               Review your past AI symptom analyses and medicine recommendations.
             </p>
           </div>
-          <div className="flex items-center gap-4 bg-white p-2 rounded-2xl border border-slate-200 shadow-sm">
-            <div className="px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl font-bold text-xs uppercase tracking-widest">
+          <div className="flex items-center gap-4 bg-white dark:bg-slate-900 p-2 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="px-4 py-2 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-xl font-bold text-xs uppercase tracking-widest">
               {history.length} Records
             </div>
           </div>
@@ -83,20 +83,20 @@ export default function History() {
                     </div>
                   </div>
 
-                  <h3 className="text-lg font-bold text-slate-800 group-hover:text-slate-900 transition-colors">
+                  <h3 className="text-lg font-bold text-slate-800 dark:text-white group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-colors">
                     {item.condition || "Health Analysis"}
                   </h3>
 
                   {item.symptoms && (
-                    <p className="text-sm text-slate-500 mt-1 line-clamp-2">
-                      <span className="font-semibold text-slate-600">Symptoms: </span>{item.symptoms}
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 line-clamp-2">
+                      <span className="font-semibold text-slate-600 dark:text-slate-300">Symptoms: </span>{item.symptoms}
                     </p>
                   )}
 
                   {item.medicines?.length > 0 && (
                     <div className="mt-3 flex flex-wrap gap-2">
                       {item.medicines.map((m, mi) => (
-                        <span key={mi} className="inline-flex items-center gap-1 text-[11px] bg-emerald-50 text-emerald-700 border border-emerald-100 px-2 py-1 rounded-lg font-semibold">
+                        <span key={mi} className="inline-flex items-center gap-1 text-[11px] bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-100 dark:border-emerald-500/20 px-2 py-1 rounded-lg font-semibold">
                           <Pill size={10} /> {m.brand || m.generic}
                         </span>
                       ))}

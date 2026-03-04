@@ -152,11 +152,11 @@ export default function Layout({ children }) {
                                 fontWeight: 600, fontSize: "0.875rem",
                                 textDecoration: "none",
                                 transition: "all 0.18s",
-                                background: active ? "#f0fdf4" : "transparent",
-                                color: active ? "#10b981" : "#475569",
-                                border: active ? "1px solid #dcfce7" : "1px solid transparent",
+                                background: active ? "rgba(16, 185, 129, 0.1)" : "transparent",
+                                color: active ? "#10b981" : "var(--color-brand-secondary)",
+                                border: active ? "1px solid rgba(16, 185, 129, 0.2)" : "1px solid transparent",
                             }}>
-                                <span style={{ color: active ? "#10b981" : "#94a3b8" }}>{item.icon}</span>
+                                <span style={{ color: active ? "#10b981" : "var(--color-text-dimmed)" }}>{item.icon}</span>
                                 {item.label}
                             </Link>
                         );
@@ -190,11 +190,11 @@ export default function Layout({ children }) {
                         display: "flex", alignItems: "center", gap: 10,
                         width: "100%", padding: "10px 14px", borderRadius: 13,
                         background: "transparent", border: "1px solid transparent",
-                        color: "#94a3b8", fontWeight: 600, fontSize: "0.875rem",
+                        color: "var(--color-text-dimmed)", fontWeight: 600, fontSize: "0.875rem",
                         cursor: "pointer", transition: "all 0.18s", fontFamily: "Inter,sans-serif",
                     }}
-                        onMouseEnter={e => { e.currentTarget.style.background = "#fff1f2"; e.currentTarget.style.color = "#e11d48"; e.currentTarget.style.borderColor = "#ffe4e6"; }}
-                        onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#94a3b8"; e.currentTarget.style.borderColor = "transparent"; }}
+                        onMouseEnter={e => { e.currentTarget.style.background = "rgba(225, 29, 72, 0.1)"; e.currentTarget.style.color = "#e11d48"; e.currentTarget.style.borderColor = "rgba(225, 29, 72, 0.2)"; }}
+                        onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "var(--color-text-dimmed)"; e.currentTarget.style.borderColor = "transparent"; }}
                     >
                         <LogOut size={18} /> Sign Out
                     </button>
@@ -239,15 +239,15 @@ export default function Layout({ children }) {
                             {userDropdownOpen && (
                                 <div style={{
                                     position: "absolute", top: 46, right: 0,
-                                    width: 220, background: "#ffffff",
-                                    border: "1px solid #e2e8f0", borderRadius: 18,
-                                    boxShadow: "0 20px 50px rgba(15,23,42,0.12)",
+                                    width: 220, background: "var(--color-bg-card)",
+                                    border: "1px solid var(--color-border-subtle)", borderRadius: 18,
+                                    boxShadow: "0 20px 50px rgba(0,0,0,0.15)",
                                     padding: "8px", zIndex: 1000,
                                     animation: "cardIn 0.2s ease-out both"
                                 }}>
-                                    <div style={{ padding: "12px 14px 10px", borderBottom: "1px solid #f1f5f9", marginBottom: 6 }}>
-                                        <p style={{ margin: 0, fontWeight: 700, color: "#0f172a", fontSize: "0.875rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{displayName}</p>
-                                        <p style={{ margin: 0, fontSize: "0.72rem", color: "#64748b" }}>{user.email}</p>
+                                    <div style={{ padding: "12px 14px 10px", borderBottom: "1px solid var(--color-border-subtle)", marginBottom: 6 }}>
+                                        <p style={{ margin: 0, fontWeight: 700, color: "var(--color-brand-primary)", fontSize: "0.875rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{displayName}</p>
+                                        <p style={{ margin: 0, fontSize: "0.72rem", color: "var(--color-brand-secondary)" }}>{user.email}</p>
                                     </div>
 
                                     {[
@@ -262,17 +262,17 @@ export default function Layout({ children }) {
                                                 display: "flex", alignItems: "center", gap: 10,
                                                 width: "100%", padding: "10px 12px", borderRadius: 12,
                                                 background: "none", border: "none", cursor: "pointer",
-                                                color: "#475569", fontSize: "0.875rem", fontWeight: 500,
+                                                color: "var(--color-brand-secondary)", fontSize: "0.875rem", fontWeight: 500,
                                                 transition: "all 0.15s", textAlign: "left"
                                             }}
-                                            onMouseEnter={e => e.currentTarget.style.background = "#f8fafc"}
+                                            onMouseEnter={e => e.currentTarget.style.background = "rgba(16, 185, 129, 0.05)"}
                                             onMouseLeave={e => e.currentTarget.style.background = "none"}
                                         >
                                             {opt.icon} {opt.label}
                                         </button>
                                     ))}
 
-                                    <div style={{ borderTop: "1px solid #f1f5f9", marginTop: 6, paddingTop: 6 }}>
+                                    <div style={{ borderTop: "1px solid var(--color-border-subtle)", marginTop: 6, paddingTop: 6 }}>
                                         <button
                                             onClick={handleLogout}
                                             style={{
@@ -282,7 +282,7 @@ export default function Layout({ children }) {
                                                 color: "#e11d48", fontSize: "0.875rem", fontWeight: 600,
                                                 transition: "all 0.15s", textAlign: "left"
                                             }}
-                                            onMouseEnter={e => e.currentTarget.style.background = "#fff1f2"}
+                                            onMouseEnter={e => e.currentTarget.style.background = "rgba(225, 29, 72, 0.1)"}
                                             onMouseLeave={e => e.currentTarget.style.background = "none"}
                                         >
                                             <LogOut size={16} /> Logout

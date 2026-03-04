@@ -76,10 +76,10 @@ export default function UploadPrescription() {
       <div className="max-w-5xl mx-auto">
         {/* Header Section */}
         <div className="mb-10 text-center lg:text-left">
-          <h1 className="text-3xl font-bold text-slate-900 font-outfit mb-3 flex items-center justify-center lg:justify-start gap-3">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white font-outfit mb-3 flex items-center justify-center lg:justify-start gap-3">
             <FileText className="text-emerald-500" /> Digital Prescription Analysis
           </h1>
-          <p className="text-slate-500 max-w-2xl leading-relaxed">
+          <p className="text-slate-500 dark:text-slate-400 max-w-2xl leading-relaxed">
             Upload your prescription (JPG, PNG, or PDF) for instant AI analysis. We'll extract medications, understand dosages, and suggest equivalent generic alternatives.
           </p>
         </div>
@@ -96,10 +96,10 @@ export default function UploadPrescription() {
                   <div className="relative w-full h-full flex flex-col items-center justify-center">
                     {isPdf ? (
                       <div className="flex flex-col items-center gap-4 py-10">
-                        <div className="w-20 h-20 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center shadow-lg">
+                        <div className="w-20 h-20 bg-red-50 dark:bg-red-500/10 text-red-500 rounded-2xl flex items-center justify-center shadow-lg">
                           <FileIcon size={40} />
                         </div>
-                        <p className="text-sm font-bold text-slate-700 max-w-[200px] truncate">{file.name}</p>
+                        <p className="text-sm font-bold text-slate-700 dark:text-slate-200 max-w-[200px] truncate">{file.name}</p>
                       </div>
                     ) : (
                       <div className="relative w-full aspect-[3/4] rounded-xl overflow-hidden shadow-inner border border-white/50 bg-white">
@@ -115,12 +115,12 @@ export default function UploadPrescription() {
                   </div>
                 ) : (
                   <>
-                    <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-slate-300 shadow-sm mb-4">
+                    <div className="w-16 h-16 bg-white dark:bg-slate-800 rounded-2xl flex items-center justify-center text-slate-300 dark:text-slate-600 shadow-sm mb-4">
                       <FileImage size={32} />
                     </div>
                     <label className="cursor-pointer">
-                      <span className="text-emerald-600 font-bold hover:underline">Click to upload</span>
-                      <p className="text-xs text-slate-400 mt-2">Supports JPG, PNG, PDF (Max 10MB)</p>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline">Click to upload</span>
+                      <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">Supports JPG, PNG, PDF (Max 10MB)</p>
                       <input
                         type="file"
                         accept="image/*,application/pdf"
@@ -166,12 +166,12 @@ export default function UploadPrescription() {
             )}
 
             {!result && !error && !loading && (
-              <div className="h-full min-h-[400px] border-2 border-dashed border-slate-100 rounded-3xl flex flex-col items-center justify-center p-12 text-center opacity-40">
-                <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center text-slate-200 mb-6 font-outfit text-4xl font-bold italic">
+              <div className="h-full min-h-[400px] border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-3xl flex flex-col items-center justify-center p-12 text-center opacity-40">
+                <div className="w-20 h-20 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center text-slate-200 dark:text-slate-700 mb-6 font-outfit text-4xl font-bold italic">
                   AI
                 </div>
-                <h3 className="text-xl font-bold text-slate-400 font-outfit">Waiting for Analysis</h3>
-                <p className="text-sm text-slate-300 mt-2 max-w-xs leading-relaxed">Your extracted medication details and genetic suggestions will appear here after upload.</p>
+                <h3 className="text-xl font-bold text-slate-400 dark:text-slate-500 font-outfit">Waiting for Analysis</h3>
+                <p className="text-sm text-slate-300 dark:text-slate-600 mt-2 max-w-xs leading-relaxed">Your extracted medication details and genetic suggestions will appear here after upload.</p>
               </div>
             )}
 
@@ -206,8 +206,8 @@ export default function UploadPrescription() {
                 <div className="p-8">
                   {/* Extracted Text Summary */}
                   <div className="mb-8">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 leading-none">Raw Transcription</p>
-                    <p className="text-slate-600 text-sm leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-100 max-h-[150px] overflow-y-auto">
+                    <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-3 leading-none">Raw Transcription</p>
+                    <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed bg-slate-50 dark:bg-slate-900 p-4 rounded-xl border border-slate-100 dark:border-slate-800 max-h-[150px] overflow-y-auto">
                       {result.extracted_text || "No legible text found in document."}
                     </p>
                   </div>

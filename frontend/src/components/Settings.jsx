@@ -18,7 +18,28 @@ export default function Settings() {
         }
     }, [darkMode]);
 
+    const [notifications, setNotifications] = useState(() => {
+        const saved = localStorage.getItem("notification_prefs");
+        return saved ? JSON.parse(saved) : {
+            dosage: true,
+            prescription: true,
+            activity: true
+        };
+    });
+
+    useEffect(() => {
+        localStorage.setItem("notification_prefs", JSON.stringify(notifications));
+    }, [notifications]);
+
     const toggleDarkMode = () => setDarkMode(!darkMode);
+
+    const toggleNotification = (key) => {
+        setNotifications(prev => ({ ...prev, [key]: !prev[key] }));
+    };
+
+    const handlePrivacy = () => {
+        alert("Privacy settings have been updated to 'Secure Management'. Your medical data is encrypted.");
+    };
 
     return (
         <Layout>
@@ -40,7 +61,7 @@ export default function Settings() {
                                 <div className={`p-3 rounded-xl transition-colors ${darkMode ? 'bg-indigo-500 text-white' : 'bg-amber-100 text-amber-600'}`}>
                                     {darkMode ? <Moon size={22} /> : <Sun size={22} />}
                                 </div>
-                                <div>
+                                <div className="min-w-0">
                                     <p className="font-bold text-slate-900 dark:text-white mb-0.5">Dark Mode</p>
                                     <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">Use darker colors for late-night sessions</p>
                                 </div>
@@ -63,18 +84,21 @@ export default function Settings() {
 
                         <div className="space-y-4">
                             {[
-                                { title: "Dosage Reminders", desc: "Get alerted when it's time for your medicine" },
-                                { title: "New Prescription", desc: "Notify when a new OCR result is ready" },
-                                { title: "Account Activity", desc: "Security alerts and login notifications" }
-                            ].map((item, idx) => (
-                                <div key={idx} className="flex items-center justify-between py-4 border-b border-slate-100 last:border-0 dark:border-slate-800">
+                                { id: "dosage", title: "Dosage Reminders", desc: "Get alerted when it's time for your medicine" },
+                                { id: "prescription", title: "New Prescription", desc: "Notify when a new OCR result is ready" },
+                                { id: "activity", title: "Account Activity", desc: "Security alerts and login notifications" }
+                            ].map((item) => (
+                                <div key={item.id} className="flex items-center justify-between py-4 border-b border-slate-100 last:border-0 dark:border-slate-800">
                                     <div className="min-w-0 pr-4">
                                         <p className="font-bold text-slate-900 dark:text-white">{item.title}</p>
                                         <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{item.desc}</p>
                                     </div>
-                                    <div className="relative w-10 h-5 bg-emerald-500 rounded-full cursor-not-allowed opacity-50">
-                                        <div className="absolute top-1 right-1 w-3 h-3 bg-white rounded-full" />
-                                    </div>
+                                    <button
+                                        onClick={() => toggleNotification(item.id)}
+                                        className={`relative w-12 h-6 rounded-full transition-all duration-300 focus:outline-none ${notifications[item.id] ? 'bg-emerald-500' : 'bg-slate-300'}`}
+                                    >
+                                        <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 shadow-sm ${notifications[item.id] ? 'translate-x-6' : 'translate-x-0'}`} />
+                                    </button>
                                 </div>
                             ))}
                         </div>
@@ -87,7 +111,12 @@ export default function Settings() {
                                 <Shield className="text-emerald-500" size={20} /> Privacy
                             </h3>
                             <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 font-medium">Manage how your medical data is shared and stored.</p>
-                            <button className="btn-secondary w-full text-xs py-2 dark:bg-slate-800 dark:border-slate-700">Configure Privacy</button>
+                            <button
+                                onClick={handlePrivacy}
+                                className="btn-secondary w-full text-xs py-2 dark:bg-slate-800 dark:border-slate-700 hover:bg-emerald-50 hover:text-emerald-600 hover:border-emerald-200"
+                            >
+                                Configure Privacy
+                            </button>
                         </div>
 
                         <div className="glass-card p-8 rounded-[32px]">

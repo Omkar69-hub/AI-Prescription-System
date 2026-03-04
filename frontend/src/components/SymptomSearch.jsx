@@ -9,9 +9,9 @@ import Layout from "./Layout";
 import { addNotification, addDosageReminder, getCurrentDosageSlot } from "../utils/notifications";
 
 const cardStyle = {
-  background: "#ffffff",
+  background: "var(--color-bg-card)",
   borderRadius: 24,
-  border: "1px solid #e2e8f0",
+  border: "1px solid var(--color-border-subtle)",
   boxShadow: "0 8px 30px rgba(0,0,0,0.03)",
   padding: "32px",
   position: "relative",
@@ -69,14 +69,14 @@ export default function SymptomSearch() {
         <div style={{ marginBottom: 28 }}>
           <h1 style={{
             fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.8rem",
-            color: "#0f172a", margin: "0 0 8px 0",
+            color: "var(--color-brand-primary)", margin: "0 0 8px 0",
             display: "flex", alignItems: "center", gap: 10,
           }}>
             <Activity style={{ color: "#10b981" }} size={28} />
             AI Symptom Analysis
           </h1>
           <p style={{
-            color: "#64748b", fontSize: "0.95rem",
+            color: "var(--color-brand-secondary)", fontSize: "0.95rem",
             margin: 0, maxWidth: 580, lineHeight: 1.65,
           }}>
             Describe how you're feeling in natural language. Our advanced AI will analyze your
@@ -92,8 +92,9 @@ export default function SymptomSearch() {
           <div style={{ position: "relative", zIndex: 1 }}>
             <label style={{
               display: "flex", alignItems: "center", gap: 7,
-              fontSize: "0.78rem", fontWeight: 700, color: "#1e293b",
+              fontSize: "0.78rem", fontWeight: 700, color: "var(--color-brand-primary)",
               marginBottom: 14, textTransform: "uppercase", letterSpacing: "0.06em",
+              opacity: 0.8
             }}>
               <Info size={15} style={{ color: "#10b981" }} />
               How can we help you today?
@@ -102,8 +103,8 @@ export default function SymptomSearch() {
             <textarea
               style={{
                 width: "100%", height: 150, padding: "16px",
-                background: "#f8fafc", border: "1.5px solid #e2e8f0",
-                borderRadius: 14, fontSize: "1rem", color: "#1e293b",
+                background: "var(--color-bg-input)", border: "1.5px solid var(--color-border-subtle)",
+                borderRadius: 14, fontSize: "1rem", color: "var(--color-brand-primary)",
                 fontFamily: "Inter,sans-serif", lineHeight: 1.65,
                 resize: "none", outline: "none", boxSizing: "border-box",
                 transition: "all 0.2s",
@@ -112,7 +113,7 @@ export default function SymptomSearch() {
               value={symptoms}
               onChange={(e) => { setSymptoms(e.target.value); if (error) setError(""); }}
               onFocus={e => { e.target.style.borderColor = "#10b981"; e.target.style.boxShadow = "0 0 0 3px rgba(16,185,129,0.1)"; }}
-              onBlur={e => { e.target.style.borderColor = "#e2e8f0"; e.target.style.boxShadow = "none"; }}
+              onBlur={e => { e.target.style.borderColor = "var(--color-border-subtle)"; e.target.style.boxShadow = "none"; }}
             />
 
             <div style={{ marginTop: 16, display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>

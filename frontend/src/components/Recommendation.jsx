@@ -7,9 +7,9 @@ import {
 import Layout from "./Layout";
 
 const card = {
-  background: "#ffffff",
+  background: "var(--color-bg-card)",
   borderRadius: 24,
-  border: "1px solid #e2e8f0",
+  border: "1px solid var(--color-border-subtle)",
   boxShadow: "0 8px 30px rgba(0,0,0,0.03)",
   padding: 32,
 };
@@ -48,8 +48,8 @@ export default function Recommendation() {
           <div style={{ width: 76, height: 76, borderRadius: "50%", background: "rgba(245,158,11,0.15)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 20, border: "1px solid rgba(245,158,11,0.3)" }}>
             <AlertTriangle size={38} style={{ color: "#f59e0b" }} />
           </div>
-          <h2 style={{ fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.8rem", color: "#0f172a", margin: "0 0 8px" }}>No Data Available</h2>
-          <p style={{ color: "#64748b", marginBottom: 28, maxWidth: 380, lineHeight: 1.6, fontFamily: "Inter,sans-serif" }}>Please perform a new symptom search to receive an AI-powered analysis.</p>
+          <h2 style={{ fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.8rem", color: "var(--color-brand-primary)", margin: "0 0 8px" }}>No Data Available</h2>
+          <p style={{ color: "var(--color-brand-secondary)", marginBottom: 28, maxWidth: 380, lineHeight: 1.6, fontFamily: "Inter,sans-serif" }}>Please perform a new symptom search to receive an AI-powered analysis.</p>
           <button onClick={() => navigate("/user/symptom-search")} style={{
             padding: "12px 28px", borderRadius: 12, border: "none",
             background: "#10b981",
@@ -81,7 +81,7 @@ export default function Recommendation() {
             >
               <ArrowLeft size={16} /> Back to Search
             </button>
-            <h1 style={{ fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.8rem", color: "#0f172a", margin: 0 }}>
+            <h1 style={{ fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "1.8rem", color: "var(--color-brand-primary)", margin: 0 }}>
               AI Health Recommendation
             </h1>
           </div>
@@ -105,10 +105,10 @@ export default function Recommendation() {
               <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#10b981", fontWeight: 700, fontSize: "0.67rem", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 12 }}>
                 <ClipboardList size={18} /> Preliminary Diagnosis
               </div>
-              <h2 style={{ fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "2rem", color: "#0f172a", margin: "0 0 12px" }}>
+              <h2 style={{ fontFamily: "Outfit,sans-serif", fontWeight: 800, fontSize: "2rem", color: "var(--color-brand-primary)", margin: "0 0 12px" }}>
                 {data.condition}
               </h2>
-              <p style={{ color: "#475569", lineHeight: 1.7, margin: 0, fontSize: "0.95rem", fontFamily: "Inter,sans-serif" }}>
+              <p style={{ color: "var(--color-brand-secondary)", lineHeight: 1.7, margin: 0, fontSize: "0.95rem", fontFamily: "Inter,sans-serif" }}>
                 {data.description}
               </p>
             </div>
@@ -122,7 +122,7 @@ export default function Recommendation() {
               <div style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "separate", borderSpacing: "0 10px" }}>
                   <thead>
-                    <tr style={{ color: "#94a3b8", fontSize: "0.65rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.07em" }}>
+                    <tr style={{ color: "var(--color-text-dimmed)", fontSize: "0.65rem", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.07em" }}>
                       <th style={{ textAlign: "left", padding: "0 10px 4px" }}>Brand Name</th>
                       <th style={{ textAlign: "left", padding: "0 10px 4px" }}>Generic / Cheaper</th>
                       <th style={{ textAlign: "left", padding: "0 10px 4px" }}>Dosage &amp; Timing</th>
@@ -133,21 +133,21 @@ export default function Recommendation() {
                     {data.medicines?.map((med, i) => (
                       <tr key={i}>
                         {/* Brand */}
-                        <td style={{ padding: "13px 10px", borderRadius: "14px 0 0 14px", background: "#f8fafc", border: "1px solid #e2e8f0", borderRight: "none" }}>
+                        <td style={{ padding: "13px 10px", borderRadius: "14px 0 0 14px", background: "var(--color-bg-input)", border: "1px solid var(--color-border-subtle)", borderRight: "none" }}>
                           <a
                             href={med.brand_link || med.buy_link} target="_blank" rel="noopener noreferrer"
                             title={`Search "${med.brand}" on 1mg`}
-                            style={{ fontWeight: 700, color: "#4f46e5", fontSize: "0.88rem", textDecoration: "none", fontFamily: "Inter,sans-serif" }}
+                            style={{ fontWeight: 700, color: "#6366f1", fontSize: "0.88rem", textDecoration: "none", fontFamily: "Inter,sans-serif" }}
                             onMouseEnter={e => e.currentTarget.style.textDecoration = "underline"}
                             onMouseLeave={e => e.currentTarget.style.textDecoration = "none"}
                           >
                             {med.brand}
                           </a>
-                          <div style={{ fontSize: "0.67rem", color: "#94a3b8", marginTop: 2, fontFamily: "Inter,sans-serif" }}>Brand — click to search</div>
+                          <div style={{ fontSize: "0.67rem", color: "var(--color-text-dimmed)", marginTop: 2, fontFamily: "Inter,sans-serif" }}>Brand — click to search</div>
                         </td>
 
                         {/* Generic */}
-                        <td style={{ padding: "13px 10px", background: "#f8fafc", border: "1px solid #e2e8f0", borderLeft: "none", borderRight: "none" }}>
+                        <td style={{ padding: "13px 10px", background: "var(--color-bg-input)", border: "1px solid var(--color-border-subtle)", borderLeft: "none", borderRight: "none" }}>
                           <a
                             href={med.buy_link} target="_blank" rel="noopener noreferrer"
                             title={`Search "${med.generic}" on 1mg`}
@@ -163,19 +163,19 @@ export default function Recommendation() {
                         </td>
 
                         {/* Dosage */}
-                        <td style={{ padding: "13px 10px", background: "#f8fafc", border: "1px solid #e2e8f0", borderLeft: "none", borderRight: "none" }}>
-                          <div style={{ display: "flex", alignItems: "flex-start", gap: 6, color: "#374151", fontSize: "0.84rem", fontWeight: 600, fontFamily: "Inter,sans-serif" }}>
+                        <td style={{ padding: "13px 10px", background: "var(--color-bg-input)", border: "1px solid var(--color-border-subtle)", borderLeft: "none", borderRight: "none" }}>
+                          <div style={{ display: "flex", alignItems: "flex-start", gap: 6, color: "var(--color-brand-primary)", fontSize: "0.84rem", fontWeight: 600, fontFamily: "Inter,sans-serif" }}>
                             <Clock size={12} style={{ color: "#818cf8", flexShrink: 0, marginTop: 3 }} />
                             {med.dosage}
                           </div>
-                          <div style={{ fontSize: "0.71rem", color: "#64748b", marginTop: 4, fontFamily: "Inter,sans-serif", fontWeight: 500 }}>{med.timing}</div>
+                          <div style={{ fontSize: "0.71rem", color: "var(--color-brand-secondary)", marginTop: 4, fontFamily: "Inter,sans-serif", fontWeight: 500 }}>{med.timing}</div>
                         </td>
 
                         {/* Buy buttons */}
-                        <td style={{ padding: "13px 10px", borderRadius: "0 14px 14px 0", background: "#f8fafc", border: "1px solid #e2e8f0", borderLeft: "none" }}>
+                        <td style={{ padding: "13px 10px", borderRadius: "0 14px 14px 0", background: "var(--color-bg-input)", border: "1px solid var(--color-border-subtle)", borderLeft: "none" }}>
                           <div style={{ display: "flex", flexDirection: "column", gap: 5, alignItems: "flex-start" }}>
                             {med.buy_link && (
-                              <BuyBtn href={med.buy_link} label="1mg" color="#4f46e5" hoverColor="#4338ca" shadow="0 2px 7px rgba(79,70,229,0.28)" />
+                              <BuyBtn href={med.buy_link} label="1mg" color="#6366f1" hoverColor="#4f46e5" shadow="0 2px 7px rgba(99,102,241,0.28)" />
                             )}
                             {med.pharmeasy_link && (
                               <BuyBtn href={med.pharmeasy_link} label="PharmEasy" color="#f97316" hoverColor="#ea580c" shadow="0 2px 7px rgba(249,115,22,0.28)" />
@@ -236,14 +236,14 @@ export default function Recommendation() {
             <button onClick={() => navigate("/user/symptom-search")} style={{
               width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
               padding: "13px 0", borderRadius: 14,
-              background: "#ffffff", border: "1px solid #e2e8f0",
-              color: "#475569", fontWeight: 700, fontSize: "0.875rem",
+              background: "var(--color-bg-card)", border: "1px solid var(--color-border-subtle)",
+              color: "var(--color-brand-secondary)", fontWeight: 700, fontSize: "0.875rem",
               cursor: "pointer", fontFamily: "Outfit,sans-serif",
               boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
               transition: "all 0.2s",
             }}
-              onMouseEnter={e => { e.currentTarget.style.background = "#f8fafc"; e.currentTarget.style.borderColor = "#cbd5e1"; }}
-              onMouseLeave={e => { e.currentTarget.style.background = "#ffffff"; e.currentTarget.style.borderColor = "#e2e8f0"; }}
+              onMouseEnter={e => { e.currentTarget.style.background = "rgba(16, 185, 129, 0.05)"; e.currentTarget.style.borderColor = "#10b981"; }}
+              onMouseLeave={e => { e.currentTarget.style.background = "var(--color-bg-card)"; e.currentTarget.style.borderColor = "var(--color-border-subtle)"; }}
             >
               Start Another Analysis
             </button>
